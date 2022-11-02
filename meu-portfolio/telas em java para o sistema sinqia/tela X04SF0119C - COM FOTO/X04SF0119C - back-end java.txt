@@ -1,0 +1,288 @@
+/*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  :: EMPRESA    : Sinqia                                                          ::
+  :: SISTEMA    : SQ Crédito                                                      ::
+  :: MÓDULO     : Fechamento custódia e WF                                        ::
+  :: OBSERVAÇÃO :                                                                 ::
+  ::------------------------------------------------------------------------------::
+  :: PROGRAMADOR:                                                                 ::
+  :: DATA       :                                           VERSÃO JAVA:          ::
+  :: ALTERAÇÃO  :                                                                 ::
+  ::------------------------------------------------------------------------------::
+  :: PROGRAMADOR: Matheus Reynard                                                 ::
+  :: DATA       : 28/04/2022                                VERSÃO JAVA:     2    ::
+  :: ALTERAÇÃO  : SQCWB-48873 - Chamado de Teste QA                               ::
+  ::              Adicionada mensagem para nenhum item selecionado; Adicionada    ::
+  ::              mensagem de confirmação.                                        ::
+  ::------------------------------------------------------------------------------::
+  :: PROGRAMADOR: Matheus Reynard                                                 ::
+  :: DATA       : 22/03/2022                                VERSÃO JAVA:     1    ::
+  :: DESCRIÇÃO  : Primeira versão                                                 ::
+  ::              SD-80679 Tela de fechamento custódia e WF                       ::
+  ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+package x04sp01.view;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import x00sp01.x00s.X00SU0101A;
+import x00sp01.x00t.ABDComando;
+import x00sp01.x00t.AProperties;
+import x00sp01.x00t.TRetornoLog;
+import x00sp02.entidade.TParamOutClient;
+import x00sp02.entidade.TMDQueryEntidade.TTypeComando;
+import x00sp03.x00c.TTIAnchorPane;
+import x00sp03.x00c.TTICheckBox;
+import x00sp03.x00c.TTIDataGrid;
+import x00sp03.x00c.TTILabelLocalizar;
+import x00sp03.x00i.IMensagemRet;
+import x00sp03.x00s.X00SU0301A;
+import x00sp03.x00t.TControllerTela;
+import x00sp03.x00t.TMDQuery;
+import x00sp03.x00t.TParamAppCliente;
+import x00sp03.x00t.types.TTypeButton;
+import x00sp03.x00t.types.TTypeIcone;
+import x04sp01.view.X04SR0151L.__uMSG_CONTINUAR_IMPRESSAO;
+import x04wp01.entidade.TIN06;
+
+public class X04SF0119C extends TControllerTela {
+
+  /*=========================================================================*/
+  /* Componentes FXML                                                        */
+  /*=========================================================================*/
+  
+  @FXML private TTIAnchorPane apFechamento;
+  
+  @FXML private TTILabelLocalizar lblInstituicao;
+  
+  @FXML private TTICheckBox ckbxWorkflow;
+  @FXML private TTICheckBox ckbxCustodia;
+  @FXML private TTICheckBox ckbxSelecionarTodos; 
+
+  @FXML private TTIDataGrid<TIN06> dtgAgencias;
+  
+  private TRetornoLog retornoLogTotal = new TRetornoLog();
+  
+  private List<TIN06> tabelaDatagrid, linhasSelecionadas;
+
+  public void initialize() {    
+    lblInstituicao.setCodigo(getParamApp().getInstituicaoId());
+    lblInstituicao.setDescricao(getParamApp().getInstituicaoNome());
+    carregarDataGrid();
+  }
+  
+  private TParamAppCliente getParamApp() {
+    return TParamAppCliente.getInstance();
+  }
+  
+  /*=========================================================================*/
+  /* Métodos para selecionar/deselecionar todos os itens do DataGrid         */
+  /*=========================================================================*/
+  
+  private void selecionarTodosCheckboxes(boolean check) {
+    dtgAgencias.proRefresh();
+    for (TIN06 entidade : dtgAgencias.getItems()) {
+      entidade.setSelecionado(check);
+    }     
+  }
+  
+  @FXML
+  private void selecionarTodos(ActionEvent event) {
+    selecionarTodosCheckboxes(ckbxSelecionarTodos.isSelected());
+  }
+  
+  /*=========================================================================*/
+  /* Método para retornar uma lista das linhas selecionadas                  */
+  /*=========================================================================*/
+  
+  private void linhasSelecionadas() {
+    linhasSelecionadas = new ArrayList<>();
+    for (TIN06 entidade : dtgAgencias.getItems()) {
+      if (entidade.getSelecionado()) {
+        linhasSelecionadas.add(entidade);
+      }
+    }
+  }
+  
+  /*=========================================================================*/
+  /* Busca as informações da IN06/IN05/EM700 e joga na DataGrid              */
+  /*=========================================================================*/
+  
+  @FXML
+  private void carregarDataGrid() {
+    dtgAgencias.setDataProvider(queryPopularDtg());
+  }
+
+  private List<TIN06> queryPopularDtg() {
+    TMDQuery<TIN06> query = new TMDQuery<>(TTypeComando.tcmSQL);
+    query.setQuery(QueryPopularDataGrid.class);
+    query.proAddParamFmt(lblInstituicao.getCodigo());
+    query.setClassResultSet(TIN06.class);
+    query.setRetornaResultSet(true);
+    try {
+      query.proExecBanco();
+    if (query.getArrRetorno() != null)
+      tabelaDatagrid = query.getArrRetorno();
+    } catch (Exception e) {
+      X00SU0301A.proMensagem(null, ErroExecBanco.class);
+    }
+    
+    return tabelaDatagrid;
+    
+  }
+  
+  // Método acionado ao clicar no botão "Atualizar"
+  @FXML
+  private void atualizar() {  
+    X00SU0301A.proMensagem(getTTIWindow(), X00SU0101A.fncFormat(getParamApp(), ContinuarSimNao.class), new IMensagemRet() {
+      @Override
+      public void proMensagemRet(TTypeButton Botao) {
+          if (TTypeButton.IDYES == Botao) {
+          retornoLogTotal = new TRetornoLog();
+          linhasSelecionadas();
+          
+          if (linhasSelecionadas == null || linhasSelecionadas.size() <= 0) {
+            retornoLogTotal.proAdicMsgAviso(X00SU0301A.fncMgsProperties(NenhumaSelecao.class));
+          }
+       
+          if (tabelaDatagrid != null && !tabelaDatagrid.isEmpty()) {
+            for (int i = 0; i < linhasSelecionadas.size(); i++) {
+              atualizarWF(i);
+              gerarTarifaCustodia(i);
+            }
+            if (retornoLogTotal.fncTemMensagem())
+              X00SU0301A.proMostraLog(retornoLogTotal);
+            retornoLogTotal = new TRetornoLog();
+          }
+        }
+      }
+    }, TTypeIcone.INTERROGACAO, TTypeButton.tbYESNO, TTypeButton.IDNO);
+  }
+  
+  /*============================================================*/
+  /* Chama a procedure de Atualizar WF de Cobrança              */
+  /*============================================================*/
+  
+  private void atualizarWF(int linha) { 
+    if (ckbxWorkflow.isSelected()) {    
+      TParamOutClient idStatus = new TParamOutClient(0);
+      TParamOutClient cdErro   = new TParamOutClient(0);  
+      TParamOutClient dsErro   = new TParamOutClient("");
+      TMDQuery<?> query = new TMDQuery<>(TTypeComando.tcmSP);
+      query.setNomeSP("SP_EM0419038");
+      query.proAddParametrosSP("ENT_NR_VRS", "13");
+      query.proAddParametrosSP("ENT_NR_INST", linhasSelecionadas.get(linha).getIN05_NR_INST());     
+      query.proAddParametrosSP("ENT_NR_AGEN", linhasSelecionadas.get(linha).getIN06_NR_AGEN());   
+      query.proAddParametrosSP("ENT_DT_ANT", linhasSelecionadas.get(linha).getEM700_DT_ANT());   
+      query.proAddParametrosSP("ENT_DT_ATUAL", linhasSelecionadas.get(linha).getEM700_DT_ATU());   
+      query.proAddParametrosSP("ENT_CD_OPESIS", getParamApp().getOperadorId());   
+      query.proAddParametrosSP("ENT_ID_EFETIV", "S");
+      query.proAddParametrosSP("RET_ID_STATUS", idStatus);
+      query.proAddParametrosSP("RET_CD_ERRO", cdErro);
+      query.proAddParametrosSP("RET_DS_ERRO", dsErro); 
+      
+      try {
+        query.proExecBanco();
+      }
+      catch (Exception e) {
+        X00SU0301A.proMensagem(null, ErroExecWF.class);
+      }
+      
+      if(idStatus.fncGetVlrSaida().toString().contentEquals("0")) {
+        retornoLogTotal.proAdicMsgSucesso("Inst. " + linhasSelecionadas.get(linha).getIN05_NR_INST() + ". Agen. " + linhasSelecionadas.get(linha).getIN06_NR_AGEN() + ". " + X00SU0301A.fncMgsProperties(SucessoWF.class));
+      } else if (!idStatus.fncGetVlrSaida().toString().contentEquals("0")) {
+        retornoLogTotal.proAdicMsgAviso("Inst. " + linhasSelecionadas.get(linha).getIN05_NR_INST() + ". Agen. " + linhasSelecionadas.get(linha).getIN06_NR_AGEN()  + ". " + dsErro.fncGetVlrSaida().toString());
+      }
+    }
+  }
+  
+  /*============================================================*/
+  /* Chama a procedure de Geração de Tarifa de Custódia         */
+  /*============================================================*/
+  
+  private void gerarTarifaCustodia(int linha) {  
+    if (ckbxCustodia.isSelected()) {    
+      TParamOutClient idStatus = new TParamOutClient(new Long("0"));
+        TMDQuery<?> query = new TMDQuery<>(TTypeComando.tcmSP);
+        query.setNomeSP("SP_EM0419059");
+        query.proAddParametrosSP("ENT_NR_VRS", "2");
+        query.proAddParametrosSP("ENT_NR_INST", linhasSelecionadas.get(linha).getIN05_NR_INST());     
+        query.proAddParametrosSP("ENT_NR_AGEN", linhasSelecionadas.get(linha).getIN06_NR_AGEN());     
+        query.proAddParametrosSP("ENT_DT_ATUAL", linhasSelecionadas.get(linha).getEM700_DT_ATU());   
+        query.proAddParametrosSP("ENT_CD_OPESIS", getParamApp().getOperadorId());   
+        query.proAddParametrosSP("RET_ID_STATUS", idStatus);
+        
+        try {
+          query.proExecBanco();
+        }
+        catch (Exception e) {
+          X00SU0301A.proMensagem(null, ErroExecCustodia.class);
+        }
+      
+      if(idStatus.fncGetVlrSaida().toString().contentEquals("0")) {
+        retornoLogTotal.proAdicMsgSucesso("Inst. " + linhasSelecionadas.get(linha).getIN05_NR_INST() + ". Agen. " + linhasSelecionadas.get(linha).getIN06_NR_AGEN()  + ". " +  X00SU0301A.fncMgsProperties(SucessoCustodia.class));
+      } else if (!idStatus.fncGetVlrSaida().toString().contentEquals("0")) {
+        retornoLogTotal.proAdicMsgAviso("Inst. " + linhasSelecionadas.get(linha).getIN05_NR_INST() + ". Agen. " + linhasSelecionadas.get(linha).getIN06_NR_AGEN()  + ". " +  X00SU0301A.fncMgsProperties(ErroCustodia.class));
+      }
+    }  
+  }
+   
+  /*=========================================================================*/
+  /* Mensagens de retorno                                                    */
+  /*=========================================================================*/
+  
+  @AProperties(Mensagem = "Deseja continuar?")
+  private class ContinuarSimNao {}; 
+  
+  @AProperties(Mensagem = "Nenhuma linha selecionada.")
+  private class NenhumaSelecao {}; 
+  
+  @AProperties(Mensagem = "Houve um erro desconhecido ao gerar as tarifas de custódia.")
+  private class ErroCustodia {}; 
+  
+  @AProperties(Mensagem = "Tarifas de custódia geradas com sucesso.")
+  private class SucessoCustodia {}; 
+  
+  @AProperties(Mensagem = "WorkFlow de cobrança atualizado com sucesso.")
+  private class SucessoWF {}; 
+  
+  @AProperties(Mensagem = "Houve um erro ao popular a tabela de dados.")
+  private class ErroExecBanco {}; 
+  
+  @AProperties(Mensagem = "Erro ao atualizar WorkFlow de cobrança.")
+  private class ErroExecWF {}; 
+  
+  @AProperties(Mensagem = "Erro ao chamar a procedure de geração de tarifas de custódia.")
+  private class ErroExecCustodia {}; 
+  
+  /*=========================================================================*/
+  /* Queryes do Banco de Dados                                               */
+  /*=========================================================================*/
+  
+  @ABDComando(Comando =
+  "SELECT                              \n"+
+  "  IN05_NR_INST  ,                   \n"+
+  "  IN05_NM_REINST,                   \n"+ 
+  "  IN06_NR_AGEN  ,                   \n"+ 
+  "  IN06_NM_REINST,                   \n"+
+  "  EM700_DT_ANT  ,                   \n"+
+  "  EM700_DT_ATU  ,                   \n"+
+  "  EM700_DT_PRX  ,                   \n"+
+  "  EM700_ST_PROC ,                   \n"+
+  "  EM700_NR_ORDEM                    \n"+
+  "FROM                                \n"+
+  "  IN06 INNER JOIN EM700 ON (        \n"+
+  "      IN06_NR_INST = EM700_NR_INST  \n"+
+  "  AND IN06_NR_AGEN = EM700_NR_AGEN  \n"+
+  "  ) INNER JOIN IN05 ON (            \n"+
+  "      IN05_NR_INST = EM700_NR_INST  \n"+
+  "  )                                 \n"+
+  "WHERE                               \n"+
+  "  EM700_NR_INST    = %s             \n"+
+  "ORDER BY                            \n"+
+  "  EM700_NR_ORDEM,                   \n"+
+  "  IN05_NR_INST  ,                   \n"+
+  "  IN06_NR_AGEN                      \n")
+  private class QueryPopularDataGrid{} 
+}

@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  :: EMPRESA    : Sinqia                                                       ::
+  :: SISTEMA    : SQ Leasing                                                   ::
+  :: MÓDULO     : Aba Contratos                                                ::
+  :: OBSERVAÇÃO :                                                              ::
+  ::- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -::
+  :: PROGRAMADOR:                                                              ::
+  :: DATA       :                                           VERSÃO FXML:       ::
+  :: ALTERAÇÃO  :                                                              ::
+  ::- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -::
+  :: PROGRAMADOR: Matheus Reynard                                              ::
+  :: DATA       : 23/11/2021                                VERSÃO FXML:     6 ::
+  :: ALTERAÇÃO  : SQCWB-40747 - Adicionado preenchimento de campos de endereço ::
+  ::              automaticamente a partir do CEP.                             ::
+  ::- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -::
+  :: PROGRAMADOR: Matheus Reynard                                              ::
+  :: DATA       : 16/11/2021                                VERSÃO FXML:     5 ::
+  :: ALTERAÇÃO  : SQCWB-40749 - Retirado campo em branco do ComboBox           ::
+  ::              Titularidade e Tipo                                          ::
+  ::- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -::
+  :: PROGRAMADOR: Wagner Gonçalves Lazari                                      ::
+  :: DATA       : 11/11/2021                                VERSÃO FXML:     4 ::
+  :: ALTERAÇÃO  : SQCWB-40914 - Alterações relativas ao layout.                ::
+  ::- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -::
+  :: PROGRAMADOR: Wagner Gonçalves Lazari                                      ::
+  :: DATA       : 08/11/2021                                VERSÃO FXML:     3 ::
+  :: ALTERAÇÃO  : SQCWB-40751 Implementação de filtragem dos contratos ao      ::
+  ::            : clicar no btn localizar.                                     ::
+  ::- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -::
+  :: PROGRAMADOR: Wagner Gonçalves Lazari                                      ::
+  :: DATA       : 04/11/2021                                VERSÃO FXML:     2 ::
+  :: ALTERAÇÃO  : Alteração do campo GA34_NR_CNPJEN                            ::
+  ::- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -::
+  :: PROGRAMADOR: Wagner Gonçalves Lazari                                      ::
+  :: DATA       : 03/08/2021                                VERSÃO FXML:     1 ::
+  :: ALTERAÇÃO  : Primeira versão                                              ::
+  ::- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -::
+-->
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import x00sp03.x00c.*?>
+<?import x00sp03.x00c.TTIButton?>
+<?import x00sp03.x00c.TTICheckBox?>
+<?import x00sp03.x00c.TTIDataGrid?>
+<?import x00sp03.x00c.TTIEdit?>
+<?import x00sp03.x00c.TTIGridPane?>
+<?import x00sp03.x00c.TTILabel?>
+<?import x00sp03.x00c.TTITextArea?>
+<?import x00sp03.x00c.TTIAnchorPane?>
+<?import x00sp03.x00c.TTITelaCRUD?>
+<?import x00sp03.x00c.TTIVBox?>
+<?import x00sp03.x00c.TTIComboBox?>
+<?import x00sp01.x00t.TMascaraValor?>
+<?import x00sp03.x00c.TTIColunaBtn?>
+<?import x00sp03.x00c.TTIHBox?>
+<?import x00sp03.x00c.TTILabelLocalizar?>
+
+<TTIAnchorPane xmlns:fx="http://javafx.com/fxml" prefWidth="450.0" minWidth="300.0" prefHeight="1000.0" minHeight="900.0" fx:controller="x18sp01.view.X18SF0104V">
+  <TTITelaCRUD fx:id="crudGA34"
+    dataGrid="dtgGa34"
+    sulfixo="GA34"
+    chavesPrimarias="GA34_NR_INST, GA34_NR_AGEN, GA34_CD_CLIENT, GA34_NR_CONTRA, GA34_NR_GARANT, GA34_CD_SIST"
+    confirmaCancelar="false"
+    utilizaFacade="false"
+    limparNoCancelar="true"
+    limparAoEditar="true"
+    limparNoNovo="true"
+    adicionaInstituicaoSemFacade="false"
+    adicionaAgenciaSemFacade="false"
+    adicionaInstituicaoFiltroLocalizar="true"
+    exibirLocalizar="true"
+    autoValidacao="true"
+    exibirImprimir="false"
+    layoutResumido="true"
+    HBox.hgrow="ALWAYS"
+    VBox.vgrow="ALWAYS"
+    consistirAntesSalvar="true"
+    prefWidth="800"
+    onAfterNovo="#proOnNovo"
+    onSalvar="#proOnSalvar"
+    onExcluir="#excluiGarantia"
+    onEditar="#proOnEditar"
+    onBeforeBtnLocalizar="#proLocalizarActionFiltro"
+    onCancelar="#proCancelar"
+    onAfterExcluir="#onAfterExcluir"
+    > 
+  
+  <TTIVBox AnchorPane.bottomAnchor="45.0" AnchorPane.topAnchor="2.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" HBox.hgrow="ALWAYS">
+    <TTITitledPane fx:id="pnlDataGrid" text="Manutenção de garantia por bens" expanded="true" collapsible="false">
+       <TTIVBox HBox.hgrow="ALWAYS">
+         <TTIHBox HBox.hgrow="ALWAYS">
+	      <TTIDataGrid id="dtgGa34" onSelecionaItem="#proSelectionaItem" tipoTotalizadorRodape="COLUNA" exibeLabelTotalizador="true" onDuploClick="#onDuploClickPrestacoes" prefWidth="200" prefHeight="150" fx:id="dtgGa34" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+	        <TTIColuna dataField="GA34_NR_GARANT" 	text="Nr." 				larguraPercentual="15" />
+	        <TTIColuna dataField="GA34_NR_CTRGAR"   text="Nr. contrato" 	larguraPercentual="20" />
+	        <TTIColuna dataField="GA34_DS_CONTRA"   text="Descrição" 		larguraPercentual="40" />
+	        <TTIColuna dataField="GA34_VL_SALDO"    text="Valor" 		    larguraPercentual="24"  tipoMascara="VALOR"	 />
+	      </TTIDataGrid>
+	    </TTIHBox>
+	  </TTIVBox>
+    </TTITitledPane>   
+			
+			<TTITabPane fx:id="tabPaneBanco" VBox.vgrow="ALWAYS">
+		      <tabs>
+		        
+		        <TTITab text="Geral" closable="false">
+			       <TTIVBox  
+	               VBox.vgrow="ALWAYS">
+					<TTITitledPane fx:id="pnlGarantia" text="Garantia" expanded="true" collapsible="false">
+			          <TTIVBox HBox.hgrow="ALWAYS">
+			          <TTIVBox HBox.hgrow="ALWAYS" styleClass="stsCnvBgContornoSA">
+					    <TTIHBox HBox.hgrow="ALWAYS">
+						  <TTILabel text="Número:" prefWidth="50" prefHeight="21" alignment="BASELINE_LEFT"/>                    
+	              		  <TTIEdit fx:id="nroGarantia" campo="GA34_NR_GARANT" prefWidth="100" prefHeight="21" disable="true" alignment="BASELINE_LEFT" tipoMascara="NUMERO" />
+						  <TTILabel text="Saldo:" prefWidth="50" prefHeight="21" alignment="BASELINE_LEFT"/>                    
+	              		  <TTIEdit fx:id="vlSaldo" campo="GA34_VL_SALDO" prefWidth="100" prefHeight="21" disable="true" alignment="BASELINE_LEFT" tipoMascara="VALOR" />
+					    </TTIHBox>
+				          <TTIHBox HBox.hgrow="ALWAYS" layoutX="500" alignment="CENTER_RIGHT">
+				            <TTILabelLocalizar
+					            fx:id="eGa01CdTipliq"
+					            label="Tipo:"
+					            campoCod="GA34_TP_GARDEF"
+					            aliasCod="GA01_TP_GARANT"
+					            aliasDesc="GA01_DS_GARANT"
+					            HBox.hgrow="ALWAYS"
+					            codWidth="50"
+					            prefWidth="50" 
+					            prefHeight="21" 
+					            lblWidth="50"
+	   				            requerido="false"
+	   				            disable="true"              
+					            onBeforeLocalizar="#onLocalizarTpBaixa">
+					            <TTIColuna text="Tipo garantia" dataField="GA01_TP_GARANT" textAlign="CENTER_RIGHT" larguraPercentual="40"/>
+		            			<TTIColuna text="Descr. garantia" dataField="GA01_DS_GARANT" larguraPercentual="60"/>
+		            	     </TTILabelLocalizar>
+						    </TTIHBox>
+				            <TTIHBox HBox.hgrow="ALWAYS">
+				              <TTILabel text="Contrato:" prefWidth="50" prefHeight="21" alignment="BASELINE_LEFT"/>                    
+	              		      <TTIEdit fx:id="nrContratoGarant" campo="GA34_NR_CTRGAR" prefWidth="100" maxChar="18" validaVazio="false" alignment="BASELINE_LEFT" tipoMascara="NUMERO" />
+						    </TTIHBox>
+				            <TTIHBox HBox.hgrow="ALWAYS">
+							   <TTILabel text="Descrição:" prefWidth="50" prefHeight="21" alignment="BASELINE_LEFT"/>                    
+		              		   <TTITextArea fx:id="dsGarantia" campo="GA34_DS_CONTRA" prefWidth="700" prefHeight="50"/>
+						    </TTIHBox>
+				            <TTIHBox HBox.hgrow="ALWAYS">
+							   <TTILabel text="Perc:" prefWidth="50" prefHeight="21" alignment="BASELINE_LEFT"/>                    
+		              		   <TTIEdit fx:id="vlPerc" campo="GA34_PC_GARANT" prefWidth="50" maxChar="12" validaVazio="false" disable="true" alignment="BASELINE_LEFT" tipoMascara="VALOR_DEC_DIN"/>
+							   <TTILabel text="Titularidade:" prefWidth="70" prefHeight="21" alignment="BASELINE_LEFT"/>                    
+						       <TTIComboBox fx:id="cbxGA34IdTitu" styleClass="csDropDownList" prefWidth="155" prefHeight="21" campo="GA34_ID_TITU" dePara="dpIdTitu"/>
+							   <TTILabel text="Tipo:" prefWidth="40" prefHeight="21" alignment="BASELINE_LEFT"/>                    
+						       <TTIComboBox fx:id="cbxGA34TpConta" styleClass="csDropDownList" prefWidth="155" prefHeight="21" campo="GA34_TP_CONTA" dePara="dpConta"/>
+						    </TTIHBox>
+					    </TTIVBox>
+					    
+			          <!-- CONTAS -->
+					    
+					    <TTIHBox HBox.hgrow="ALWAYS">
+						    <TTIVBox HBox.hgrow="ALWAYS" >
+				              <TTIHBox HBox.hgrow="ALWAYS">
+							    <TTITabPane id="tabContas" VBox.vgrow="ALWAYS" prefWidth="800" minWidth="500" prefHeight="120">
+							      <tabs>
+							         
+							       <TTITab text="Conta Principal" closable="false">
+							         <TTIVBox HBox.hgrow="ALWAYS"  styleClass="stsCnvBgContornoSA">
+				            		   <TTIHBox HBox.hgrow="ALWAYS">
+				            		   	 <TTILabelLocalizar
+								            fx:id="eGa34NrBanlvmPrinc"
+								            label="Banco:"
+								            campoCod="GA34_NR_BANCO"
+								            aliasCod="TG14_NR_BANCO"
+								            aliasDesc="TG14_NM_BANCO"
+								            HBox.hgrow="ALWAYS"
+								            codWidth="50"
+								            prefWidth="50" 
+								            prefHeight="21" 
+								            lblWidth="50"
+				   				            requerido="false"
+				   				            disable="true"
+				   				            onBeforeLocalizar="#onLocalizarBancoPrinc">
+								            <TTIColuna text="Cód. sem dígito verificador" dataField="TG14_NR_BANCO" larguraPercentual="40" textAlign="CENTER_RIGHT"/>
+					            			<TTIColuna text="Nome do banco" dataField="TG14_NM_BANCO" larguraPercentual="60"/>
+		            	     			 </TTILabelLocalizar>
+									   </TTIHBox>
+								       <TTIHBox HBox.hgrow="ALWAYS">
+								         <TTILabelLocalizar
+								            fx:id="eGa34NrAgenPrinc"
+								            label="Agência:"
+								            campoCod="GA34_NR_AGESFN"
+								            aliasCod="TG15_NR_AGESFN"
+								            aliasDesc="TG15_NM_AGESFN"
+								            HBox.hgrow="ALWAYS"
+								            codWidth="50"
+								            prefWidth="50" 
+								            prefHeight="21" 
+								            lblWidth="50"
+				   				            requerido="false"
+				   				            disable="true"
+				   				            onBeforeLocalizar="#onLocalizarAgenPrinc">
+								            <TTIColuna text="Cód. sem dígito verificador" dataField="TG15_NR_BANCO" larguraPercentual="30" textAlign="CENTER_RIGHT"/>
+					            			<TTIColuna text="Nr. da agência" dataField="TG15_NR_AGESFN" larguraPercentual="30"/>
+					            			<TTIColuna text="Nome da agência" dataField="TG15_NM_AGESFN" larguraPercentual="40"/>
+		            	     			  </TTILabelLocalizar>		
+		            	     			</TTIHBox>
+								        <TTIHBox HBox.hgrow="ALWAYS">
+										  <TTILabel text="C/C:" prefWidth="50" prefHeight="21" alignment="BASELINE_LEFT"/>                    
+				              		      <TTIEdit fx:id="nroCta" campo="GA34_NR_CONTA" prefWidth="50" maxChar="5" validaVazio="false" alignment="BASELINE_LEFT" tipoMascara="NUMERO" />
+				              		      <TTIEdit fx:id="digCta" campo="GA34_CD_DVCTA" prefWidth="30" maxChar="1" validaVazio="false" alignment="BASELINE_LEFT" tipoMascara="NUMERO" />
+										</TTIHBox>
+			            		     </TTIVBox>
+				            	   </TTITab>
+							       
+                    <!-- LIVRE MOVIMENTAÇÃO -->
+                    
+							       <TTITab text="Livre movimentação" closable="false">
+		  					         <TTIVBox HBox.hgrow="ALWAYS"  styleClass="stsCnvBgContornoSA">
+				            		   <TTIHBox HBox.hgrow="ALWAYS">
+				            		     <TTILabelLocalizar
+								            fx:id="eGa34NrBanlvmLvm"
+								            label="Banco:"
+								            campoCod="GA34_NR_BANLVM"
+								            aliasCod="TG14_NR_BANCO"
+								            aliasDesc="TG14_NM_BANCO"
+								            HBox.hgrow="ALWAYS"
+								            codWidth="50"
+								            prefWidth="50" 
+								            prefHeight="21" 
+								            lblWidth="50"
+				   				            requerido="false"
+				   				            disable="true" 
+				   				            onBeforeLocalizar="#onLocalizarBancoLvm">
+								            <TTIColuna text="Cód. sem dígito verificador" dataField="TG14_NR_BANCO" larguraPercentual="40" textAlign="CENTER_RIGHT"/>
+					            			<TTIColuna text="Nome do banco" dataField="TG14_NM_BANCO" larguraPercentual="60"/>
+		            	     			 </TTILabelLocalizar>
+									   </TTIHBox>
+								       <TTIHBox HBox.hgrow="ALWAYS">
+								         <TTILabelLocalizar
+								            fx:id="eGa34NrAgenLvm"
+								            label="Agência:"
+								            campoCod="GA34_NR_AGELVM"
+								            aliasCod="TG15_NR_AGESFN"
+								            aliasDesc="TG15_NM_AGESFN"
+								            HBox.hgrow="ALWAYS"
+								            codWidth="50"
+								            prefWidth="50" 
+								            prefHeight="21" 
+								            lblWidth="50"
+				   				            requerido="false"
+				   				            disable="true" 
+				   				            onBeforeLocalizar="#onLocalizarAgenLvm">
+								            <TTIColuna text="Cód. sem dígito verificador" dataField="TG15_NR_BANCO" larguraPercentual="30" textAlign="CENTER_RIGHT"/>
+					            			<TTIColuna text="Nr. da agência" dataField="TG15_NR_AGESFN" larguraPercentual="30"/>
+					            			<TTIColuna text="Nome da agência" dataField="TG15_NM_AGESFN" larguraPercentual="40"/>
+		            	     			  </TTILabelLocalizar>		
+		            	     			</TTIHBox>
+								        <TTIHBox HBox.hgrow="ALWAYS">
+										  <TTILabel text="C/C:" prefWidth="50" prefHeight="21" alignment="BASELINE_LEFT"/>                    
+				              		      <TTIEdit fx:id="nroCtaLvm" campo="GA34_NR_CONLVM" prefWidth="50" maxChar="5" validaVazio="false" alignment="BASELINE_LEFT" tipoMascara="NUMERO" />
+				              		      <TTIEdit fx:id="digCtaLvm" campo="GA34_NR_DVLVM" prefWidth="30" maxChar="1" validaVazio="false" alignment="BASELINE_LEFT" tipoMascara="NUMERO" />
+				            		   </TTIHBox>
+			            		     </TTIVBox>
+							       </TTITab>
+							       
+							       <TTITab text="Conta caução" closable="false">
+		  					         <TTIVBox HBox.hgrow="ALWAYS"  styleClass="stsCnvBgContornoSA">
+				            		   <TTIHBox HBox.hgrow="ALWAYS">
+				            		   	 <TTILabelLocalizar
+								            fx:id="eGa34NrBanlvmCc"
+								            label="Banco:"
+								            campoCod="GA34_NR_BANCC"
+								            aliasCod="TG14_NR_BANCO"
+								            aliasDesc="TG14_NM_BANCO"
+								            HBox.hgrow="ALWAYS"
+								            codWidth="50"
+								            prefWidth="50" 
+								            prefHeight="21" 
+								            lblWidth="50"
+				   				            requerido="false"
+				   				            disable="true" 
+				   				            onBeforeLocalizar="#onLocalizarBancoCc">
+								            <TTIColuna text="Cód. sem dígito verificador" dataField="TG14_NR_BANCO" larguraPercentual="40" textAlign="CENTER_RIGHT"/>
+					            			<TTIColuna text="Nome do banco" dataField="TG14_NM_BANCO" larguraPercentual="60"/>
+		            	     			 </TTILabelLocalizar>
+									   </TTIHBox>
+								       <TTIHBox HBox.hgrow="ALWAYS">
+								         <TTILabelLocalizar
+								            fx:id="eGa34NrAgenCc"
+								            label="Agência:"
+								            campoCod="GA34_NR_AGECC"
+								            aliasCod="TG15_NR_AGESFN"
+								            aliasDesc="TG15_NM_AGESFN"
+								            HBox.hgrow="ALWAYS"
+								            codWidth="50"
+								            prefWidth="50" 
+								            prefHeight="21" 
+								            lblWidth="50"
+				   				            requerido="false"
+				   				            disable="true" 
+				   				            onBeforeLocalizar="#onLocalizarAgenCc">
+								            <TTIColuna text="Cód. sem dígito verificador" dataField="TG15_NR_BANCO" larguraPercentual="30" textAlign="CENTER_RIGHT"/>
+					            			<TTIColuna text="Nr. da agência" dataField="TG15_NR_AGESFN" larguraPercentual="30"/>
+					            			<TTIColuna text="Nome da agência" dataField="TG15_NM_AGESFN" larguraPercentual="40"/>
+		            	     			  </TTILabelLocalizar>		
+		            	     			</TTIHBox>
+								        <TTIHBox HBox.hgrow="ALWAYS">
+										  <TTILabel text="C/C:" prefWidth="50" prefHeight="21" alignment="BASELINE_LEFT"/>                    
+				              		      <TTIEdit fx:id="nroCtaCc" campo="GA34_NR_CONTCC" prefWidth="50" maxChar="5" validaVazio="false" alignment="BASELINE_LEFT" tipoMascara="NUMERO" />
+				              		      <TTIEdit fx:id="digCtaCc" campo="GA34_CD_DVCC" prefWidth="30" maxChar="1" validaVazio="false" alignment="BASELINE_LEFT" tipoMascara="NUMERO" />
+				            		   </TTIHBox>
+			            		     </TTIVBox>
+			            		   </TTITab>
+							       
+							      </tabs>
+							    </TTITabPane>
+		   				      </TTIHBox>
+		  			        </TTIVBox>
+					    </TTIHBox>
+	  			      </TTIVBox>
+			      
+				  </TTITitledPane>
+				  </TTIVBox>
+		        </TTITab>
+		        
+		  <TTITab text="Dados do contrato" closable="false">
+		    <TTIVBox HBox.hgrow="ALWAYS">
+		      <TTITitledPane fx:id="pnlDados" text="Ente pagador" expanded="true" collapsible="false">
+		              <TTIVBox HBox.hgrow="ALWAYS">
+			          <TTIVBox HBox.hgrow="ALWAYS"  styleClass="stsCnvBgContornoSA">
+			            <TTIHBox HBox.hgrow="ALWAYS">
+			               <TTILabel text="Nome:" prefWidth="60" prefHeight="21" GridPane.columnIndex="0" GridPane.rowIndex="0" alignment="BASELINE_LEFT"/>                    
+	              		   <TTIEdit fx:id="eGa34NmEntPag" campo="GA34_NM_ENTPAG" GridPane.columnIndex="0" GridPane.rowIndex="0" prefWidth="600" maxChar="60" validaVazio="false" alignment="BASELINE_LEFT"/>
+				        </TTIHBox>
+			         
+				        <TTIHBox HBox.hgrow="ALWAYS">
+					       <TTILabel text="CNPJ:" prefWidth="60" prefHeight="21" GridPane.columnIndex="0" GridPane.rowIndex="1" alignment="BASELINE_LEFT"/>                    
+	                       <TTIEdit fx:id="eGa34NrCnpjEn" campo="CPF/CNPJ" GridPane.columnIndex="0" GridPane.rowIndex="1" prefWidth="120" maxChar="14" validaVazio="false" alignment="BASELINE_LEFT" tipoMascara="CPFCNPJ" />
+			               <TTILabelLocalizar 
+			                 fx:id="lblNrCEP"
+			                 GridPane.columnIndex="1"
+			                 GridPane.rowIndex="1"
+			                 descricaoVisible="false"
+			                 lblWidth="60"
+			                 codWidth="100"  
+			                 prefWidth="100"             
+			                 prefHeight="13"
+			                 label="CEP:"
+			                 noFocusOnRegistroNovo="true"
+			                 limparAoNaoEncontrar="false"
+			                 descricao="CEP"
+			                 somenteExistente="false"
+			                 utilizaConsultaDinamica="false"
+			                 campoCod="GA34_NR_CEP"
+			                 aliasCod="TG05_NR_CEP"
+			                 semEntidade="true"
+			                 tipoMascara="CEP"
+			                 utilizaInstituicaoParamApp="false"                
+			                 onBeforeLocalizar="#localizarCEP"
+			                 onAfterLocalizar="#afterLocalizarCEP">
+			                 <TTIColuna text="CEP"             dataField="TG05_NR_CEP" mascaraZerosEsquerda="true" tipoMascara="CEP" larguraPercentual="11"/>
+			                 <TTIColuna text="CEP (geral)"     dataField="TG03_NR_CEP" mascaraZerosEsquerda="true" tipoMascara="CEP" larguraPercentual="14" visible="false"/>
+			                 <TTIColuna text="Logradouro"      dataField="TG05_NM_LOGRAD" larguraPercentual="28"/>
+			                 <TTIColuna text="Logradouro red." dataField="TG05_NM_LOGABR" larguraPercentual="20"/>
+			                 <TTIColuna text="Bairro"          dataField="TG04_NM_BAIRR"  larguraPercentual="20"/>
+			                 <TTIColuna text="Localidade"      dataField="TG03_NM_LOCALI" larguraPercentual="20"/>
+			                 <TTIColuna text="UF"              dataField="TG05_CD_ESTBR"  larguraPercentual="20"/>
+			                 <TTIColuna text="Cód. IBGE"       dataField="TG03_CD_IBGE"   larguraPercentual="15" textAlign="CENTER_RIGHT"/>                
+			               </TTILabelLocalizar> 
+				        </TTIHBox>
+			         
+				        <TTIHBox HBox.hgrow="ALWAYS">
+					       <TTILabel text="Endereço:" prefWidth="60" prefHeight="21" GridPane.columnIndex="0" GridPane.rowIndex="2" alignment="BASELINE_LEFT"/>                    
+	              		   <TTIEdit fx:id="eGa34NmEnd" campo="GA34_NM_END" prefWidth="200" GridPane.columnIndex="0" GridPane.rowIndex="2" maxChar="40" validaVazio="false" alignment="BASELINE_LEFT" />
+						   <TTILabel text="Número:" prefWidth="60" prefHeight="21" GridPane.columnIndex="1" GridPane.rowIndex="2" alignment="BASELINE_RIGHT"/>                    
+	              		   <TTIEdit fx:id="eGa34NrEnd" campo="GA34_NR_END" prefWidth="40" GridPane.columnIndex="1" GridPane.rowIndex="2" maxChar="7" validaVazio="false" alignment="BASELINE_RIGHT" tipoMascara="NUMERO" />
+				        </TTIHBox>
+			         
+				        <TTIHBox HBox.hgrow="ALWAYS">
+					       <TTILabel text="Complem.:" prefWidth="60" prefHeight="21" GridPane.columnIndex="0" GridPane.rowIndex="3" alignment="BASELINE_LEFT"/>                    
+	              		   <TTIEdit fx:id="eGa34DsCompl" campo="GA34_DS_COMPL" prefWidth="100" GridPane.columnIndex="0" GridPane.rowIndex="3" maxChar="20" validaVazio="false" alignment="BASELINE_LEFT"/>
+						   <TTILabel text="Bairro:" prefWidth="60" prefHeight="21" GridPane.columnIndex="1" GridPane.rowIndex="3" alignment="BASELINE_RIGHT"/>                    
+	              		   <TTIEdit fx:id="eGa34NmBairro" campo="GA34_NM_BAIRRO" prefWidth="100" GridPane.columnIndex="1" GridPane.rowIndex="3" maxChar="30" validaVazio="false" alignment="BASELINE_RIGHT"/>
+				        </TTIHBox>
+			         
+				        <TTIHBox HBox.hgrow="ALWAYS">
+					       <TTILabel text="Município:" prefWidth="60" prefHeight="21" GridPane.columnIndex="0" GridPane.rowIndex="4" alignment="BASELINE_LEFT"/>                    
+	              		   <TTIEdit fx:id="eGa34NmCidade" campo="GA34_NM_CIDADE" prefWidth="200" GridPane.columnIndex="0" GridPane.rowIndex="4" maxChar="50" validaVazio="false" alignment="BASELINE_LEFT"/>
+						   <TTILabel text="UF:" prefWidth="60" prefHeight="21" GridPane.columnIndex="1" GridPane.rowIndex="4" alignment="BASELINE_RIGHT"/>                    
+	              		   <TTIEdit fx:id="eGa34SgEstado" campo="GA34_SG_ESTADO" prefWidth="50" GridPane.columnIndex="1" GridPane.rowIndex="4" maxChar="5" validaVazio="false" alignment="BASELINE_RIGHT"/>
+				        </TTIHBox>
+				      </TTIVBox>
+			</TTIVBox>
+		</TTITitledPane>
+					
+		 <TTIHBox HBox.hgrow="ALWAYS">
+		   	<TTITitledPane fx:id="pnlDetalhes" text=" " expanded="true" collapsible="false" prefWidth="800" minWidth="500" prefHeight="150">
+	          	<TTIVBox HBox.hgrow="ALWAYS"  styleClass="stsCnvBgContornoSA">
+		            <TTIHBox HBox.hgrow="ALWAYS">
+		               <TTILabel text="Vigência:" prefWidth="60" prefHeight="21" alignment="BASELINE_LEFT"/>                    
+					   <TTIComboBox fx:id="cbxGa34IdVigen" styleClass="csDropDownList" prefWidth="155" prefHeight="21" campo="GA34_ID_VIGEN" dePara="dpIdVigen" exibeVazio="true" onAction="#actionDtVigente"/>
+					   <TTILabel text="Quantidade:" prefWidth="60" prefHeight="21" alignment="BASELINE_RIGHT"/>                    
+	             		   <TTIEdit fx:id="eGa34QtVigen" campo="GA34_QT_VIGEN" prefWidth="50" maxChar="5" validaVazio="false" alignment="BASELINE_RIGHT" tipoMascara="QTDE" />
+			        </TTIHBox>
+		         
+			        <TTIHBox HBox.hgrow="ALWAYS">
+				       <TTILabel text="Vl. mensal:" prefWidth="60" prefHeight="21" alignment="BASELINE_LEFT"/>                    
+	             		   <TTIEdit fx:id="eGa34VlMensal" campo="GA34_VL_MENSAL" prefWidth="160" maxChar="21" validaVazio="false" alignment="BASELINE_LEFT" tipoMascara="VALOR_DEC_DIN" />
+					   <TTILabel text="Vl. etapa:" prefWidth="60" prefHeight="21" alignment="BASELINE_RIGHT"/>                    
+	             		   <TTIEdit fx:id="eGa34VlEtapa" campo="GA34_VL_ETAP" prefWidth="160" maxChar="21" validaVazio="false" alignment="BASELINE_RIGHT" tipoMascara="VALOR_DEC_DIN" />
+			        </TTIHBox>
+		         
+			        <TTIHBox HBox.hgrow="ALWAYS">
+				      <TTILabel text="Obj. contr.:" prefWidth="60" prefHeight="21" alignment="BASELINE_LEFT"/>                    
+	              		   <TTITextArea fx:id="eGa34DsCtrObj" campo="GA34_DS_CTROBJ" prefWidth="700" prefHeight="50"/>
+                  	</TTIHBox>
+		       </TTIVBox>
+		  </TTITitledPane>
+	  </TTIHBox>
+  				</TTIVBox>
+		        </TTITab>
+		      </tabs>
+		    </TTITabPane>
+		    </TTIVBox>
+	 </TTITelaCRUD>
+</TTIAnchorPane>

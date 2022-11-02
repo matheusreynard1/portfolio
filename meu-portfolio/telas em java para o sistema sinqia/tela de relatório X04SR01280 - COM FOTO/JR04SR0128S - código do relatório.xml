@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  :: EMPRESA    : Sinqia                                                       ::
+  :: SISTEMA    : SQ Crédito                                                   ::
+  :: MÓDULO     : Cobrança                                                     ::
+  :: OBSERVAÇÃO : Ocorrências no processamento de baixas - Sintético           ::
+  ::- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -::
+  :: PROGRAMADOR:                                                              ::
+  :: DATA       :                                            VERSÃO XML:       ::
+  :: ALTERAÇÃO  :                                                              ::
+  ::- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -::
+  :: PROGRAMADOR:                                                              ::
+  :: DATA       :                                            VERSÃO XML:     2 ::
+  :: ALTERAÇÃO  :                                                              ::
+  ::- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -::
+  :: PROGRAMADOR: Matheus Reynard                                              ::
+  :: DATA       : 20/04/2022                                VERSÃO XML:      1 ::
+  :: ALTERAÇÃO  : Primeira versão                                              ::
+  ::              SQCWB-49255 - Migração tela Delphi para Java                 ::
+  :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+ !-->
+<JRXML Vrs="1">
+  <Param
+    RelNome="JR04SR0128S"
+    RelTitulo="Ocorrências no processamento de baixas - Sintético"
+    SubTituloUm=""
+    ConsultaBD="S"
+    SubTituloDois="Valores em R$"
+    Orientation="Landscape"
+    ComLogo="N"
+    SistemaSaas="N"
+    ImgCustom=""
+    fonteTipo=""
+    filtroNome="X04SR01280"/>
+
+    <Group IdGroup="1" Field="CL01_NM_CLIENT" IncNewPag="N" ReprintHeaderOnEachPage="S">
+      <GHeader IdGroup="1" Margin="0" Exibir="S">
+        <GHField Label="Cliente: " Width="50" Align="Left"/>
+        <GHField Field="CL01_NM_CLIENT"  Width="200" Align="Left" />
+      </GHeader>
+     <GFooter IdGroup="1" Margin="0" Bold="S" Exibir="S" Summary="S" SeparatorLine="S" SumTit="Total:"  SumTitWidth="100" CountOneRow="N" >
+        <GFField IdColumn="80"    Calculation="Sum"     Align="Right" />
+        <GFField IdColumn="90"    Calculation="Sum"     Align="Right" />
+        <GFField IdColumn="100"   Calculation="Sum"     Align="Right" />
+        <GFField IdColumn="110"   Calculation="Sum"     Align="Right" />
+        <GFField IdColumn="120"   Calculation="Sum"     Align="Right" />
+        <GFField IdColumn="130"   Calculation="Sum"     Align="Right" />
+        <GFField IdColumn="140"   Calculation="Sum"     Align="Right" />
+       </GFooter>
+     </Group>
+
+    <C Id="5"   Desc="Pgto. prog."    Field="EM198_NR_ACORDO"      TipoCampo="T" Exibir="S" Width="40"   Align="Right"  Mask="DIGVERIF" />
+    <C Id="10"  Desc="Contrato"       Field="EM81_NR_CONTRA"       TipoCampo="T" Exibir="S" Width="80"   Align="Right"  Mask="DIGVERIF" PrintRepeatedValue="N" />
+    <C Id="20"  Desc="Prest."         Field="EM198_NR_PRESTA"      TipoCampo="T" Exibir="S" Width="40"   Align="Right" />
+    <C Id="30"  Desc="Seq."           Field="EM198_NR_SEQPAG"      TipoCampo="T" Exibir="S" Width="40"   Align="Right" />
+    <C Id="40"  Desc="Dt. fecha."     Field="EM198_DT_ATU"         TipoCampo="T" Exibir="S" Width="40"   Align="Right"  Mask="DATA" />
+    <C Id="50"  Desc="Dt. pgto."      Field="EM198_DT_PAGAME"      TipoCampo="T" Exibir="S" Width="40"   Align="Right"  Mask="DATA" />
+    <C Id="60"  Desc="Dt. movto."     Field="EM198_DT_MOVIME"      TipoCampo="T" Exibir="S" Width="40"   Align="Right"  Mask="DATA"/>
+    <C Id="70"  Desc="Dt. venc."      Field="EM198_DT_VCTPRE"      TipoCampo="T" Exibir="S" Width="40"   Align="Right"  Mask="DATA" />
+    <C Id="80"  Desc="Vl. presta."    Field="EM198_VL_PRESTA"      TipoCampo="T" Exibir="S" Width="50"   Align="Right"  Mask="VALOR" />
+    <C Id="90"  Desc="Vl. desc."      Field="EM198_VL_DESCON"      TipoCampo="T" Exibir="S" Width="50"   Align="Right"  Mask="VALOR" />
+    <C Id="100" Desc="Vl. multa"      Field="EM198_VL_MULTA"       TipoCampo="T" Exibir="S" Width="50"   Align="Right"  Mask="VALOR" />
+    <C Id="110" Desc="Vl. mora"       Field="EM198_VL_JURVCD"      TipoCampo="T" Exibir="S" Width="50"   Align="Right"  Mask="VALOR"/>
+    <C Id="120" Desc="Vl. acrésc."    Field="EM198_VL_OUTACR"      TipoCampo="T" Exibir="S" Width="50"   Align="Right"  Mask="VALOR" />
+    <C Id="130" Desc="Vl. outras"     Field="EM198_VL_OUTDED"      TipoCampo="T" Exibir="S" Width="50"   Align="Right"  Mask="VALOR" />
+    <C Id="140" Desc="Vl. pgto."      Field="EM198_VL_PAGAME"      TipoCampo="T" Exibir="S" Width="50"   Align="Right"  Mask="VALOR"/>
+    <C Id="150" Desc="Desc. erro"     Field="EM198_DS_ERRO"        TipoCampo="T" Exibir="S" Width="100"  Align="Left" PrintRepeatedValue="N" />
+    <C Id="160" Desc="Nome cliente"   Field="CL01_NM_CLIENT"       TipoCampo="T" Exibir="S" Width="100"  Align="Left" PrintRepeatedValue="N" />
+    
+</JRXML>

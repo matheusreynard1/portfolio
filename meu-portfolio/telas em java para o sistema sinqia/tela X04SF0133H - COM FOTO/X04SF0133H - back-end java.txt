@@ -1,0 +1,226 @@
+/*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  :: EMPRESA    : Sinqia                                                       ::
+  :: SISTEMA    : SQ Crédito                                                   ::
+  :: MÓDULO     : Parâmetros de validação de NF                                ::
+  :: OBSERVAÇÃO :                                                              ::
+  ::---------------------------------------------------------------------------::
+  :: PROGRAMADOR:                                                              ::
+  :: DATA       :                                           VERSÃO JAVA:       ::
+  :: ALTERAÇÃO  :                                                              ::
+  ::---------------------------------------------------------------------------::
+  :: PROGRAMADOR: Matheus Reynard                                              ::
+  :: DATA       : 10/03/2022                                VERSÃO JAVA:     1 ::
+  :: DESCRIÇÃO  : Primeira versão                                              ::
+  ::              SD-80679 Tela de parâmetros de validação de NF               ::
+  :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+package x04sp01.view;
+
+import java.util.List;
+
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import x00sp01.x00t.ABDComando;
+import x00sp01.x00t.AProperties;
+import x00sp01.x00t.TRetornoLog;
+import x00sp02.entidade.TMDQueryEntidade.TTypeComando;
+import x00sp03.x00c.TTIAnchorPane;
+import x00sp03.x00c.TTIComboBox;
+import x00sp03.x00c.TTIDataGrid;
+import x00sp03.x00c.TTIEdit;
+import x00sp03.x00c.TTILabelLocalizar;
+import x00sp03.x00c.TTITelaCRUD;
+import x00sp03.x00c.TTITelaExterna;
+import x00sp03.x00i.IConsisteCrud;
+import x00sp03.x00s.X00SU0301A;
+import x00sp03.x00t.TActionRetorno;
+import x00sp03.x00t.TControllerTela;
+import x00sp03.x00t.TMDQuery;
+import x00sp03.x00t.TParamAppCliente;
+import x04wp01.entidade.TEM144;
+import x04wp01.entidade.TEM495;
+
+public class X04SF0133H extends TControllerTela {
+
+  /*=========================================================================*/
+  /* Componentes FXML                                                        */
+  /*=========================================================================*/
+	
+  @FXML private TTIAnchorPane apParametros;
+
+  @FXML private TTIEdit editDesProduto;
+  @FXML private TTIEdit editCodInstituicao;
+  @FXML private TTIEdit editDescInstituicao;
+  @FXML private TTIEdit editNrDias;
+  
+  @FXML private TTILabelLocalizar lblProduto;
+  
+  @FXML private TTIComboBox cbxCodSisop;  
+  @FXML private TTIComboBox cbxTipoData;  
+  
+  @FXML private TTITelaCRUD crudParametros;
+
+  @FXML private TTIDataGrid<TEM144> dtgParametros;
+  
+  @FXML private TTITelaExterna txPerfil;
+  
+  private boolean estadoBtnNovo = false;
+
+  public void initialize() {    
+    editCodInstituicao.setValor(getParamApp().getInstituicaoId());
+    editDescInstituicao.setValor(getParamApp().getInstituicaoNome());    
+    crudParametros.setParametros(TEM144.class);   
+    carregarDataGrid();
+  }
+  
+  private TParamAppCliente getParamApp() {
+    return TParamAppCliente.getInstance();
+  }
+  
+  /*=========================================================================*/
+  /* Seta as informações da linha clicada nos campos do CRUD                 */
+  /*=========================================================================*/
+  
+  @FXML
+  private void selecionaItem() { 
+    dtgParametros.setOnSelecionaItem(new EventHandler<TActionRetorno>() {
+  
+      @Override
+      public void handle(TActionRetorno event) {
+        if (dtgParametros.getSelecionado() != null) {
+          TEM144 entidade = dtgParametros.getSelecionado();
+          entidade.setEM144_NR_INST(Integer.parseInt(getParamApp().getInstituicaoId()));
+          crudParametros.setEntidade(entidade);
+        }
+      }
+    });  
+  }
+  
+  /*=========================================================================*/
+  /* Troca a flag de novo/editar em true/false e desabilita/habilita campos  */
+  /*=========================================================================*/
+  
+  @FXML
+  private void onNovo() {
+    estadoBtnNovo = true;   
+    editCodInstituicao.setValor(getParamApp().getInstituicaoId());
+    editCodInstituicao.setDisable(true);
+    desabilitarDatagrid();   
+    lblProduto.setDisable(false);
+  }
+  
+  @FXML
+  private void onEditar() {
+    estadoBtnNovo = false;
+    editCodInstituicao.setValor(getParamApp().getInstituicaoId());
+    editCodInstituicao.setDisable(true);
+    lblProduto.setDisable(true);
+    desabilitarDatagrid();
+  }
+  
+  @FXML
+  private void afterNovo() {
+    dtgParametros.setDisable(true);
+    editCodInstituicao.setValor(getParamApp().getInstituicaoId());
+    editCodInstituicao.setDisable(true);
+  }
+  
+  @FXML
+  private void afterEditar() {
+    editCodInstituicao.setValor(getParamApp().getInstituicaoId());
+    editCodInstituicao.setDisable(true);
+    cbxCodSisop.setDisable(true);
+    cbxTipoData.setDisable(true);
+  }
+  
+  @FXML
+  private void desabilitarDatagrid() {
+    dtgParametros.setDisable(true);
+  }
+  
+  @FXML
+  private void onCancelar() {
+    dtgParametros.setDisable(false);
+  }
+  
+  @FXML
+  private void afterCancelar() {
+    editCodInstituicao.setValor(getParamApp().getInstituicaoId());
+    editCodInstituicao.setDisable(true);
+    dtgParametros.setDisable(false);
+  }
+  
+  @FXML
+  private void afterExcluir() {
+	editCodInstituicao.setValor(getParamApp().getInstituicaoId());
+	editCodInstituicao.setDisable(true);
+    carregarDataGrid();
+  }
+  
+  @FXML
+  private void onExcluir() {
+	editCodInstituicao.setValor(getParamApp().getInstituicaoId());
+	editCodInstituicao.setDisable(true);
+  }
+  
+  @FXML
+  private void afterSalvar() {
+    editCodInstituicao.setValor(getParamApp().getInstituicaoId());
+    editCodInstituicao.setDisable(true);
+    dtgParametros.setDisable(false);
+    carregarDataGrid();
+  }
+  
+  /*=========================================================================*/
+  /* Busca as informações da EM144 e joga na DataGrid                        */
+  /*=========================================================================*/
+  
+  @FXML
+  private void carregarDataGrid() {
+	  dtgParametros.setDataProvider(queryPopularDtg());
+  }
+
+  private List<TEM144> queryPopularDtg() {
+    TMDQuery<TEM144> query = new TMDQuery<>(TTypeComando.tcmSQL);
+    List<TEM144> lista;
+	try {
+	  query.setQuery(QueryPopularDataGrid.class);
+	  query.proAddParamFmt(getParamApp().getInstituicaoId());
+	  query.setClassResultSet(TEM144.class);
+	  query.setRetornaResultSet(true);
+	  query.proExecBanco();	 
+	  lista = query.getArrRetorno();
+	  if (lista != null && !lista.isEmpty()) {
+	    return lista;
+	  }
+	} catch (Exception e) {
+	  X00SU0301A.proGeraErro(ErroExecBanco.class, e);
+	}
+	
+	return null;
+    
+  }
+   
+  // Mensagem de erro
+  @AProperties(Mensagem = "Houve um erro ao tentar popular a tabela de dados.")
+  private class ErroExecBanco {}; 
+  
+  /*=========================================================================*/
+  /* Queryes do Banco de Dados                                               */
+  /*=========================================================================*/
+  
+  @ABDComando(Comando =
+  "SELECT                                  \n"+
+  "  EM144_CD_PRODUT,                      \n"+
+  "  EM02_DS_PRODUC ,                      \n"+ 
+  "  EM144_CD_SISOP ,                      \n"+ 
+  "  EM144_TP_DATA  ,                      \n"+
+  "  EM144_NR_DDPMIS                       \n"+
+  "FROM                                    \n"+
+  "      EM144 INNER JOIN EM02 ON (        \n"+
+  "      EM144_NR_INST   = EM02_NR_INST    \n"+
+  "  AND EM144_CD_PRODUT = EM02_CD_PRODUT  \n"+
+  "  )                                     \n"+
+  "WHERE                                   \n"+
+  "  EM144_NR_INST       = %s              \n")
+  private class QueryPopularDataGrid{} 
+}

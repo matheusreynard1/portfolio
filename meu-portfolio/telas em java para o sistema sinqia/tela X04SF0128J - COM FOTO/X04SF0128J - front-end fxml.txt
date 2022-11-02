@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  :: EMPRESA    : Sinqia                                                       ::
+  :: SISTEMA    : SQ Crédito                                                   ::
+  :: MÓDULO     : Manutenção de tipo de contato                                ::
+  :: OBSERVAÇÃO :                                                              ::
+  ::- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -::
+  :: PROGRAMADOR:                                                              ::
+  :: DATA       :                                           VERSÃO FXML:       ::
+  :: ALTERAÇÃO  :                                                              ::
+  ::- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -::
+  :: PROGRAMADOR: Matheus Reynard                                              ::
+  :: DATA       : 18/02/2022                                VERSÃO JAVA:     1 ::
+  :: DESCRIÇÃO  : Primeira versão                                              ::
+  ::              SD-80679 Tela de gerenciamento de tipos de contato           ::
+  :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+-->
+
+<?import java.lang.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import x00sp03.x00c.*?>
+<?import x00sp03.x00c.TTIButton?>
+<?import x00sp03.x00c.TTICheckBox?>
+<?import x00sp03.x00c.TTIDataGrid?>
+<?import x00sp03.x00c.TTIEdit?>
+<?import x00sp03.x00c.TTIGridPane?>
+<?import x00sp03.x00c.TTILabel?>
+<?import x00sp03.x00c.TTITextArea?>
+<?import x00sp03.x00c.TTIAnchorPane?>
+<?import x00sp03.x00c.TTITelaCRUD?>
+<?import x00sp03.x00c.TTIVBox?>
+
+
+<TTIAnchorPane fx:id="apManTipoContato" prefWidth="496" prefHeight="295" fx:controller="x04sp01.view.X04SF0128J" xmlns:fx="http://javafx.com/fxml" minWidth="496">
+  <TTIVBox fx:id="vbGeral" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0">
+    <TTITabPane fx:id="pnlTipoContato" VBox.vgrow="ALWAYS">
+      <tabs>
+        <TTITab fx:id="tabTipoContato" text="Man. de tipo de contato" closable="false">
+          <TTIVBox styleClass="stsCnvBgContornoSA">
+            <TTIHBox VBox.vgrow="ALWAYS">
+              <TTITelaCRUD
+                HBox.hgrow="ALWAYS"
+                sulfixo="EM93"
+                fx:id="crudTipoContato"
+                adicionaInstituicaoDataGrid="false"
+                adicionaInstituicaoSemFacade="false"
+                utilizaFacade="false"
+                autoValidacao="true"
+                confirmaCancelar="false"
+                exibirLocalizar="false"
+                layoutResumido="true"
+                dataGrid="dtgTipoContato"
+                limparAoEditar="true"
+                limparAoNovo="true"
+                limparNoCancelar="true"
+                chavesPrimarias="EM93_NR_TPCONT"
+                itensSomenteNovo="EM93_NR_TPCONT"
+                onNovo="#onNovo"
+                onEditar="#onEditar">
+                <TTIVBox AnchorPane.bottomAnchor="45.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0">
+                  <TTIDataGrid fx:id="dtgTipoContato" VBox.vgrow="ALWAYS">
+                    <TTIColuna text="Código"             dataField="EM93_NR_TPCONT" larguraPercentual="30" textAlign="CENTER_RIGHT"/>
+                    <TTIColuna text="Descrição"          dataField="EM93_DS_TPCONT" larguraPercentual="70" textAlign="CENTER_LEFT" />
+                  </TTIDataGrid>
+                  <TTIVBox VBox.vgrow="ALWAYS" styleClass="stsCnvBgContornoSA">
+                    <TTIHBox HBox.hgrow="ALWAYS" alignment="CENTER_LEFT">
+                      <TTILabel    HBox.hgrow="NEVER"  prefWidth="50"  text="Código:" requerido="true"/>
+                      <TTIEdit     fx:id="editNrTipoContato"      HBox.hgrow="NEVER"  prefWidth="50"  campo="EM93_NR_TPCONT" alignment="CENTER_LEFT" maxChar="5" textAlign="CENTER_RIGHT" numerico="true" validaVazio="true" descricao="Código"/>
+                      <TTILabel    HBox.hgrow="NEVER"  prefWidth="70"  text="Descrição:" requerido="true"/>
+                      <TTIEdit     fx:id="editDesTipoContato"    HBox.hgrow="NEVER"  prefWidth="100" campo="EM93_DS_TPCONT" maxChar="40" validaVazio="true" descricao="Descrição"/>
+                    </TTIHBox>
+                  </TTIVBox>
+                </TTIVBox>
+              </TTITelaCRUD>
+            </TTIHBox>
+          </TTIVBox>
+        </TTITab>
+      </tabs>
+    </TTITabPane>
+  </TTIVBox>
+</TTIAnchorPane>

@@ -1,0 +1,1071 @@
+/*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  :: EMPRESA    : Sinqia                                                       ::
+  :: SISTEMA    : SQ Leasing                                                   ::
+  :: MÓDULO     : Aba Contratos                                                ::
+  :: OBSERVAÇÃO :                                                              ::
+  ::---------------------------------------------------------------------------::
+  :: PROGRAMADOR:                                                              ::
+  :: DATA       :                                           VERSÃO JAVA:       ::
+  :: ALTERAÇÃO  :                                                              ::
+  ::---------------------------------------------------------------------------::
+  :: PROGRAMADOR: Matheus Reynard                                              ::
+  :: DATA       : 23/11/2021                                VERSÃO FXML:     6 ::
+  :: ALTERAÇÃO  : SQCWB-40747 - Adicionado preenchimento de campos de endereço ::
+  ::              automaticamente a partir do CEP.                             ::
+  ::- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -::
+  :: PROGRAMADOR: Wagner Gonçalves Lazari                                      ::
+  :: DATA       : 17/11/2021                                VERSÃO JAVA:     5 ::
+  :: ALTERAÇÃO  : SQCWB-40754 Implementação de método de consistencia dos      ::
+  ::            : campos CPF/CNPJ, tipo, número e desc. do contrato.           ::
+  ::---------------------------------------------------------------------------::
+  :: PROGRAMADOR: Wagner Gonçalves Lazari                                      ::
+  :: DATA       : 11/11/2021                                VERSÃO JAVA:     4 ::
+  :: ALTERAÇÃO  : SQCWB-40755 Implementação de método de inserção na base      ::
+  ::            : GA34 e chamada da procedure SPLS1804001.                     ::
+  ::- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -::
+  :: PROGRAMADOR: Wagner Gonçalves Lazari                                      ::
+  :: DATA       : 08/11/2021                                VERSÃO JAVA:     3 ::
+  :: ALTERAÇÃO  : SQCWB-40751 Implementação do método proLocalizarActionFiltro ::
+  ::            : filtragem dos contratos ao clicar no btn localizar.          ::
+  ::---------------------------------------------------------------------------::
+  :: PROGRAMADOR: Wagner Gonçalves Lazari                                      ::
+  :: DATA       : 04/11/2021                                VERSÃO JAVA:     2 ::
+  :: ALTERAÇÃO  : SQCWB-40756 - Alteração do campo GA34_NR_CNPJEN.             ::
+  ::---------------------------------------------------------------------------::
+  :: PROGRAMADOR: Wagner Gonçalves Lazari                                      ::
+  :: DATA       : 03/08/2021                                VERSÃO JAVA:     1 ::
+  :: ALTERAÇÃO  : Primeira versão                                              ::
+  :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+package x18sp01.view;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import x00sp01.x00t.ABDComando;
+import x00sp01.x00t.AProperties;
+import x00sp01.x00t.TRetornoLog;
+import x00sp02.entidade.TMDQueryEntidade.TTypeComando;
+import x00sp02.entidade.TParamOutClient;
+import x00sp03.x00c.TTICheckBox;
+import x00sp03.x00c.TTIComboBox;
+import x00sp03.x00c.TTIDataGrid;
+import x00sp03.x00c.TTIEdit;
+import x00sp03.x00c.TTILabelLocalizar;
+import x00sp03.x00c.TTIService;
+import x00sp03.x00c.TTIService.IServiceEntidade;
+import x00sp03.x00c.TTITabPane;
+import x00sp03.x00c.TTITelaCRUD;
+import x00sp03.x00c.TTITextArea;
+import x00sp03.x00c.TTITitledPane;
+import x00sp03.x00s.X00SU0301A;
+import x00sp03.x00t.TControllerTela;
+import x00sp03.x00t.TMDQuery;
+import x00sp03.x00t.TParamAppCliente;
+import x00sp03.x00t.TTIWindow;
+import x00sp51.entidade.TTG14;
+import x04sp00.entidade.TTG15;
+import x18wp01.entidade.TGA01;
+import x18wp01.entidade.TGA03;
+import x18wp01.entidade.TG05;
+import x18wp01.entidade.TGA34;
+import x18wp01.entidade.TX18SF0104A;
+
+public class X18SF0104V extends TControllerTela {
+  
+  private static final String SESSION_PRODUTO = "X18SF0104A_CODPROD";
+  private static final String SESSION_CONTRATO = "X18SF0104A_NUMCONTRA";
+  private static final String GA34TPGARANT = "GA34_TP_GARANT";
+  private static final String ENTNRINST = "ENT_NR_INST";
+  private static final String ENTNRAGEN = "ENT_NR_AGEN";
+  private static final String ENTNRCONTRA = "ENT_NR_CONTRA";
+  private static final String ENTIDSITBEM = "ENT_ID_SITBEM";
+  private static final String ENTDTENTRAD = "ENT_DT_ENTRAD";
+  private static final String ENTIDOPCAO = "ENT_ID_OPCAO";
+  private static final String ENTNRGARANT = "ENT_NR_GARANT";
+  private static final String ENTDSGARANT = "ENT_DS_GARANT";
+  private static final String ENTNRVRS = "ENT_NR_VRS";
+  private static final String ENTCDOPESIS = "ENT_CD_OPESIS";
+  private static final String ENTTPGARANT = "ENT_TP_GARANT";
+  private static final String ENTCDSIST = "ENT_CD_SIST";
+  private static final String ENTCDPRODUT = "ENT_CD_PRODUT";
+  private static final String RETIDSTATUS = "RET_ID_STATUS";
+  private static final String RETNRGARANT = "RET_NR_GARANT";
+  private static final String MESES = "Meses";
+  private static final String DIAS = "Dias";
+  private static final String INDETERMINADA = "Indeterminada";
+
+  private String cdProduto;
+  private String nrContrato;
+  private Integer numGarantia;
+
+  private String manut = "";
+  
+  @FXML private TTIDataGrid<TGA34> dtgGa34;
+
+  @FXML private TTILabelLocalizar lblMarca;
+  @FXML private TTILabelLocalizar lblModelo;
+  @FXML private TTILabelLocalizar lblTipoGarantia;
+  @FXML private TTILabelLocalizar eGa34NrAgenPrinc;
+  @FXML private TTILabelLocalizar eGa34NrAgenLvm;
+  @FXML private TTILabelLocalizar eGa34NrAgenCc;
+  @FXML private TTILabelLocalizar eGa34NrBanlvmPrinc;
+  @FXML private TTILabelLocalizar eGa34NrBanlvmLvm;
+  @FXML private TTILabelLocalizar eGa34NrBanlvmCc;
+  @FXML private TTILabelLocalizar eGa01CdTipliq;
+  @FXML private TTILabelLocalizar lblNrCEP;
+
+  @FXML private TTIEdit nrContratoGarant;
+  @FXML private TTIEdit nroGarantia;
+  @FXML private TTIEdit vlSaldo;
+  @FXML private TTIEdit vlPerc;
+  @FXML private TTIEdit editChassi;
+  @FXML private TTIEdit editRenavam;
+  @FXML private TTIEdit anoFabr;
+  @FXML private TTIEdit recebeContrato;
+
+  /*GERAL E DADOS DO CONTRATO*/
+  @FXML private TTIEdit editUltimaAvaliacao;
+  @FXML private TTIEdit editDataBaixa;
+  @FXML private TTIEdit editVencimentoSeg;
+  @FXML private TTIEdit editLiberacao;
+  @FXML private TTIEdit editDataEntrada;
+  @FXML private TTIEdit eGa34QtVigen;
+  @FXML private TTIEdit nroCta;
+  @FXML private TTIEdit nroCtaLvm;
+  @FXML private TTIEdit nroCtaCc;
+  @FXML private TTIEdit digCta;
+  @FXML private TTIEdit digCtaLvm;
+  @FXML private TTIEdit digCtaCc;
+  @FXML private TTIEdit eGa34NmEntPag;
+  @FXML private TTIEdit eGa34NrCnpjEn;
+  @FXML private TTIEdit eGa34NmEnd;
+  @FXML private TTIEdit eGa34NrEnd;
+  @FXML private TTIEdit eGa34DsCompl;
+  @FXML private TTIEdit eGa34NmBairro;
+  @FXML private TTIEdit eGa34NmCidade;
+  @FXML private TTIEdit eGa34SgEstado;
+  @FXML private TTIEdit eGa34VlMensal;
+  @FXML private TTIEdit eGa34VlEtapa;
+  
+  @FXML private TTITextArea dsGarantia;
+  @FXML private TTITextArea eGa34DsCtrObj;
+  
+  @FXML private TTIComboBox<?> cbxGA34IdTitu;
+  @FXML private TTIComboBox<?> cbxGA34TpConta;
+  @FXML private TTIComboBox<?> cbxGa34IdVigen;
+  
+  @FXML private TTICheckBox cbxExigSeguro;
+  @FXML private TTICheckBox cbxIdProprietario;
+  
+  @FXML private TTITitledPane pnlDataGrid;
+  @FXML private TTITitledPane pnlPrest;
+  @FXML private TTITitledPane pnlGarantia;
+  @FXML private TTITitledPane pnlDados;
+  @FXML private TTITitledPane pnlDetalhes;
+  
+  @FXML private TTITabPane tabPaneBanco;
+  @FXML private TTITabPane tabContas;
+  
+  @FXML private TTITelaCRUD crudGA34;
+  @FXML private TTITelaCRUD crudGA35;
+  
+  private X18SF0104A controllerTelaPai;
+  
+  public void initialize() {
+    recuperaParametros();
+    dtgContratos();
+  pnlDados.setDisable(true);
+  pnlGarantia.setDisable(true);
+  pnlDetalhes.setDisable(true);
+    numGarantia = 0;
+  }
+  
+  @FXML
+  public void proOnSalvar() {
+    if(consisteCampos()){
+      if(manut.equalsIgnoreCase(""))
+        manut = "I";
+    
+      TTIService service = new TTIService();
+        service.setServiceEntidade(new IServiceEntidade() {
+        
+          @Override
+          public void proOnSuceed(TTIService service, Object retorno) throws Exception {
+            X00SU0301A.proMensagem(getTTIWindow(), RegistroSalvoSucesso.class);
+            dtgContratos();
+            ActionEvent event = new ActionEvent();
+            crudGA34.getActionToolBar().getBtnCancelar().fireEvent(event);
+          }
+        
+          @Override
+          public void proOnException(Exception e) throws Exception {
+            X00SU0301A.proGeraErro(e);
+          }
+        
+          @Override
+          public Object fncTarefa(TTIService service) throws Exception {
+            final TRetornoLog retorno = new TRetornoLog();
+            salvaGarantia(retorno);
+            return retorno;
+          }
+        });
+      service.start();
+    }
+  }
+  
+  private void salvaGarantia(TRetornoLog retorno){
+    numGarantiaGa03();
+    fncSpLs1804001(retorno);
+  }
+  
+  @FXML
+  private void excluiGarantia(){
+    TMDQuery<Object> rQuery = new TMDQuery<>(TTypeComando.tcmSP);
+    Integer entCdSist = 18;
+    Integer entTpGarant = 20;
+    TRetornoLog retornoLog = new TRetornoLog();    
+    TParamOutClient cdErro = new TParamOutClient(Integer.valueOf(0));
+    TParamOutClient dsErro = new TParamOutClient("");
+    
+    rQuery.setNomeSP("P180004020");
+    rQuery.proAddParametrosSP(ENTNRVRS, "1");
+    rQuery.proAddParametrosSP(ENTNRINST, getParamApp().getInstituicaoIdInt());
+    rQuery.proAddParametrosSP(ENTNRAGEN, getParamApp().getAgenciaIdInt());
+    rQuery.proAddParametrosSP(ENTCDPRODUT, Integer.parseInt(cdProduto));
+    rQuery.proAddParametrosSP(ENTNRCONTRA, Integer.parseInt(nrContrato));
+    rQuery.proAddParametrosSP(ENTCDSIST, entCdSist);
+    rQuery.proAddParametrosSP(ENTTPGARANT, entTpGarant);
+    rQuery.proAddParametrosSP(ENTNRGARANT, Integer.parseInt(nroGarantia.getValor()));
+    rQuery.proAddParametrosSP(ENTCDOPESIS, getParamApp().getOperadorIdLong());
+    rQuery.proAddParametrosSP("ENT_ID_RESULT", "N");
+    rQuery.proAddParametrosSP(RETIDSTATUS, 0);
+    rQuery.proAddParametrosSP("RET_CD_ERRO", cdErro);
+    rQuery.proAddParametrosSP("RET_DS_ERRO", dsErro);
+    
+    try {
+      rQuery.proExecBanco();
+      manut = "E";
+      fncSpLs1804001(retornoLog);
+    } catch (Exception e) {
+      X00SU0301A.fncMensagem(X00SU0301A.fncFormat(ErroExecLs180004020.class));
+    }
+    dtgContratos();
+  }
+  
+  private void fncSpLs1804001(TRetornoLog retorno) {
+    TGA34 entidade = new TGA34();
+    TParamOutClient cdErro = new TParamOutClient(0);
+    TParamOutClient dsErro = new TParamOutClient("");    
+    TParamOutClient retNrGarant = new TParamOutClient(0L);
+    TParamOutClient retIdStatus = new TParamOutClient(0);
+    Integer entCdSist = 18;
+    Integer entTpGarant = 20;
+    
+  try {
+        TMDQuery<TGA34> rQuery = new TMDQuery<>(TTypeComando.tcmSP);
+      
+        rQuery.setNomeSP("SP_LS1804001");
+        rQuery.proAddParametrosSP(ENTNRVRS, "2");
+        rQuery.proAddParametrosSP(ENTNRINST, getParamApp().getInstituicaoIdInt());
+        rQuery.proAddParametrosSP(ENTNRAGEN, Integer.parseInt(getParamApp().getAgenciaId()));
+        rQuery.proAddParametrosSP(ENTTPGARANT, entTpGarant);
+        rQuery.proAddParametrosSP(ENTNRGARANT, Integer.parseInt(nroGarantia.getValor()) == 0 ? null : Integer.parseInt(nroGarantia.getValor()));
+        rQuery.proAddParametrosSP(ENTDSGARANT, dsGarantia.getText().isEmpty() || dsGarantia.getText().equalsIgnoreCase("null") ? "" : dsGarantia.getText());
+        rQuery.proAddParametrosSP(ENTCDOPESIS, getParamApp().getOperadorIdLong());
+        rQuery.proAddParametrosSP(ENTCDSIST, entCdSist);
+        rQuery.proAddParametrosSP(ENTCDPRODUT, Integer.parseInt(cdProduto));
+        rQuery.proAddParametrosSP(ENTNRCONTRA, Integer.parseInt(nrContrato));
+        rQuery.proAddParametrosSP(ENTIDSITBEM, "A");
+        rQuery.proAddParametrosSP(ENTIDOPCAO, manut);
+        rQuery.proAddParametrosSP(ENTDTENTRAD, null);
+        rQuery.proAddParametrosSP("ENT_NR_BORDER", null);
+        rQuery.proAddParametrosSP("ENT_QT_TITULO", null);
+        rQuery.proAddParametrosSP("ENT_VL_BORDERO", null);
+        rQuery.proAddParametrosSP("ENT_VL_BORDER", null);
+        rQuery.proAddParametrosSP("ENT_TP_GARDEF", (eGa01CdTipliq.getValorBusca() == null || eGa01CdTipliq.getValorBusca().isEmpty() ? null : Integer.parseInt(eGa01CdTipliq.getValorBusca())));
+        rQuery.proAddParametrosSP("ENT_VL_GARANT", (vlSaldo.getValor() == null || vlSaldo.getValor().isEmpty() || vlSaldo.getValor().equals("0") ? 0.00 : vlSaldo.getValor()));
+        rQuery.proAddParametrosSP("ENT_ID_EXISEG", null);
+        rQuery.proAddParametrosSP("ENT_DT_BAIXA", null);
+        rQuery.proAddParametrosSP(RETIDSTATUS, 0);
+        
+        switch(manut) {
+          case "E":
+            rQuery.proAddParametrosSP(RETNRGARANT, null);
+            break;
+          case "A":
+            rQuery.proAddParametrosSP(RETNRGARANT, dtgGa34.getSelecionado().getGA34_NR_GARANT());
+            break;
+          case "I":
+            rQuery.proAddParametrosSP(RETNRGARANT, numGarantia + 1);
+            break;
+          default:
+      }
+        
+          
+        rQuery.proAddParametrosSP("RET_NR_BORDER", null);
+        rQuery.setRetornaResultSet(true);
+  
+        rQuery.proExecBanco();
+      
+        if (retIdStatus.fncGetVlrSaida() != null && !retIdStatus.fncGetVlrSaida().equals(0)) {
+          X00SU0301A.fncMensagem(X00SU0301A.fncFormat(ErroDuranteGravacaoRegTbl.class, nrContrato, cdErro.fncGetVlrSaida(), dsErro.fncGetVlrSaida()));
+          return;
+        }
+        if (retNrGarant.fncGetVlrSaida() != null && !retNrGarant.fncGetVlrSaida().equals("")) 
+          entidade.setGA34_NR_GARANT(Integer.parseInt(retNrGarant.fncGetVlrSaida().toString()));
+    
+        if(manut.equalsIgnoreCase("I") || manut.equalsIgnoreCase("A"))
+          insertGa34();
+        
+        retorno.fncTemMensagemSucesso();
+  } catch (Exception e) {
+      X00SU0301A.proGeraErro(ErroDuranteGravacaoRegTbl.class, e);
+    }  
+  }
+  
+  private void insertGa34() {
+    TMDQuery<TGA34> queryGa34 = new TMDQuery<>(TTypeComando.tcmSQL);
+    Date data = new Date();
+    SimpleDateFormat formatador = new SimpleDateFormat("yyyyMMdd");
+
+    switch (manut) {
+    case "I":
+      queryGa34.setQuery(IncluirContrato.class);
+      queryGa34.proAddParamFmt(numGarantia);
+      queryGa34.proAddParamFmt(getParamApp().getInstituicaoIdInt());
+      queryGa34.proAddParamFmt(Integer.parseInt(getParamApp().getAgenciaId()));
+      queryGa34.proAddParamFmt(nrContrato);
+      queryGa34.proAddParamFmt(Integer.parseInt(getParamApp().getSistemaId()));
+      queryGa34.proAddParamFmt(cdProduto);
+      queryGa34.proAddParamFmt((eGa01CdTipliq.getValorBusca() == null || eGa01CdTipliq.getValorBusca().isEmpty()) ? null : eGa01CdTipliq.getValorBusca());
+      queryGa34.proAddParamFmt((eGa01CdTipliq.getValorBusca() == null || eGa01CdTipliq.getValorBusca().isEmpty()) ? null : eGa01CdTipliq.getValorBusca());
+      queryGa34.proAddParamFmt(nrContratoGarant.getValor());
+      queryGa34.proAddParamFmt(dsGarantia.getText().isEmpty() || dsGarantia.getText().equalsIgnoreCase("null") ? "" : dsGarantia.getText());
+      
+      queryGa34.proAddParamFmt((eGa34NrBanlvmPrinc.getValorBusca() == null || eGa34NrBanlvmPrinc.getValorBusca().isEmpty()) ? null : eGa34NrBanlvmPrinc.getValorBusca());
+      queryGa34.proAddParamFmt((eGa34NrAgenPrinc.getValorBusca() == null || eGa34NrAgenPrinc.getValorBusca().isEmpty()) ? null : eGa34NrAgenPrinc.getValorBusca());
+      queryGa34.proAddParamFmt((nroCta.getValor() == null || nroCta.getValor().isEmpty()) ? null : nroCta.getValor());
+      queryGa34.proAddParamFmt(digCta.getValor());
+      queryGa34.proAddParamFmt((eGa34NrBanlvmLvm.getValorBusca() == null || eGa34NrBanlvmLvm.getValorBusca().isEmpty()) ? null : eGa34NrBanlvmLvm.getValorBusca());
+      queryGa34.proAddParamFmt((eGa34NrAgenLvm.getValorBusca() == null || eGa34NrAgenLvm.getValorBusca().isEmpty()) ? null : eGa34NrAgenLvm.getValorBusca());
+      queryGa34.proAddParamFmt((nroCtaLvm.getValor() == null || nroCtaLvm.getValor().isEmpty()) ? null : nroCtaLvm.getValor());
+      queryGa34.proAddParamFmt(digCtaLvm.getValor());
+      queryGa34.proAddParamFmt((eGa34NrBanlvmCc.getValorBusca() == null || eGa34NrBanlvmCc.getValorBusca().isEmpty()) ? null : eGa34NrBanlvmCc.getValorBusca());
+      queryGa34.proAddParamFmt((eGa34NrAgenCc.getValorBusca() == null || eGa34NrAgenCc.getValorBusca().isEmpty()) ? null : eGa34NrAgenCc.getValorBusca());
+      queryGa34.proAddParamFmt((nroCtaCc.getValor() == null || nroCtaCc.getValor().isEmpty()) ? null : nroCtaCc.getValor());
+      queryGa34.proAddParamFmt(digCtaCc.getValor());
+      
+      queryGa34.proAddParamFmt((vlSaldo.getValor() == null || vlSaldo.getValor().isEmpty()) ? 0.00 : vlSaldo.getValor());
+      queryGa34.proAddParamFmt((vlPerc.getValor() == null || vlPerc.getValor().isEmpty()) ? 0.00 : vlPerc.getValor());
+      queryGa34.proAddParamFmt(formatador.format(data));
+      queryGa34.proAddParamFmt(eGa34NmEntPag.getValor());
+      queryGa34.proAddParamFmt(eGa34NrCnpjEn.getValor());
+      queryGa34.proAddParamFmt(eGa34NmEnd.getValor());
+      queryGa34.proAddParamFmt(eGa34NrEnd.getValor());
+      queryGa34.proAddParamFmt(eGa34DsCompl.getValor());
+      queryGa34.proAddParamFmt(eGa34NmBairro.getValor());
+      queryGa34.proAddParamFmt(eGa34NmCidade.getValor());
+      queryGa34.proAddParamFmt(eGa34SgEstado.getValor());
+      queryGa34.proAddParamFmt(lblNrCEP.getCodigo());
+      queryGa34.proAddParamFmt(actionDtVigente());
+      queryGa34.proAddParamFmt((eGa34QtVigen.getValor() == null || eGa34QtVigen.getValor().isEmpty()) ? null : eGa34QtVigen.getValor());
+      queryGa34.proAddParamFmt((eGa34VlMensal.getValor() == null || eGa34VlMensal.getValor().isEmpty()) ? null : eGa34VlMensal.getValor());
+      queryGa34.proAddParamFmt((eGa34VlEtapa.getValor() == null || eGa34VlEtapa.getValor().isEmpty()) ? null : eGa34VlEtapa.getValor());
+      queryGa34.proAddParamFmt(eGa34DsCtrObj.getText());
+      queryGa34.proAddParamFmt(getParamApp().getOperadorIdLong());
+
+    break;
+    case "A":
+      queryGa34.setQuery(EditarContrato.class);
+
+      queryGa34.proAddParamFmt(cdProduto);
+      queryGa34.proAddParamFmt((eGa01CdTipliq.getValorBusca() == null || eGa01CdTipliq.getValorBusca().isEmpty()) ? null : eGa01CdTipliq.getValorBusca());
+      queryGa34.proAddParamFmt(dsGarantia.getText().isEmpty() || dsGarantia.getText().equalsIgnoreCase("null") ? "" : dsGarantia.getText());
+      
+      queryGa34.proAddParamFmt((eGa34NrBanlvmPrinc.getValorBusca() == null || eGa34NrBanlvmPrinc.getValorBusca().isEmpty()) ? null : eGa34NrBanlvmPrinc.getValorBusca());
+      queryGa34.proAddParamFmt((eGa34NrAgenPrinc.getValorBusca() == null || eGa34NrAgenPrinc.getValorBusca().isEmpty()) ? null : eGa34NrAgenPrinc.getValorBusca());
+      queryGa34.proAddParamFmt((nroCta.getValor() == null || nroCta.getValor().isEmpty()) ? null : nroCta.getValor());
+      queryGa34.proAddParamFmt(digCta.getValor());
+      queryGa34.proAddParamFmt((eGa34NrBanlvmLvm.getValorBusca() == null || eGa34NrBanlvmLvm.getValorBusca().isEmpty()) ? null : eGa34NrBanlvmLvm.getValorBusca());
+      queryGa34.proAddParamFmt((eGa34NrAgenLvm.getValorBusca() == null || eGa34NrAgenLvm.getValorBusca().isEmpty()) ? null : eGa34NrAgenLvm.getValorBusca());
+      queryGa34.proAddParamFmt((nroCtaLvm.getValor() == null || nroCtaLvm.getValor().isEmpty()) ? null : nroCtaLvm.getValor());
+      queryGa34.proAddParamFmt(digCtaLvm.getValor());
+      queryGa34.proAddParamFmt((eGa34NrBanlvmCc.getValorBusca() == null || eGa34NrBanlvmCc.getValorBusca().isEmpty()) ? null : eGa34NrBanlvmCc.getValorBusca());
+      queryGa34.proAddParamFmt((eGa34NrAgenCc.getValorBusca() == null || eGa34NrAgenCc.getValorBusca().isEmpty()) ? null : eGa34NrAgenCc.getValorBusca());
+      queryGa34.proAddParamFmt((nroCtaCc.getValor() == null || nroCtaCc.getValor().isEmpty()) ? null : nroCtaCc.getValor());
+      queryGa34.proAddParamFmt(digCtaCc.getValor());
+      
+      queryGa34.proAddParamFmt((vlSaldo.getValor() == null || vlSaldo.getValor().isEmpty()) ? 0.00 : vlSaldo.getValor());
+      queryGa34.proAddParamFmt((vlPerc.getValor() == null || vlPerc.getValor().isEmpty()) ? 0.00 : vlPerc.getValor());
+      queryGa34.proAddParamFmt(formatador.format(data));
+      queryGa34.proAddParamFmt(eGa34NmEntPag.getValor());
+      queryGa34.proAddParamFmt(eGa34NrCnpjEn.getValor());
+      queryGa34.proAddParamFmt(eGa34NmEnd.getValor());
+      queryGa34.proAddParamFmt(eGa34NrEnd.getValor());
+      queryGa34.proAddParamFmt(eGa34DsCompl.getValor());
+      queryGa34.proAddParamFmt(eGa34NmBairro.getValor());
+      queryGa34.proAddParamFmt(eGa34NmCidade.getValor());
+      queryGa34.proAddParamFmt(eGa34SgEstado.getValor());
+      queryGa34.proAddParamFmt(lblNrCEP.getCodigo());
+      queryGa34.proAddParamFmt(actionDtVigente());
+      queryGa34.proAddParamFmt((eGa34QtVigen.getValor() == null || eGa34QtVigen.getValor().isEmpty()) ? null : eGa34QtVigen.getValor());
+      queryGa34.proAddParamFmt((eGa34VlMensal.getValor() == null || eGa34VlMensal.getValor().isEmpty()) ? null : eGa34VlMensal.getValor());
+      queryGa34.proAddParamFmt((eGa34VlEtapa.getValor() == null || eGa34VlEtapa.getValor().isEmpty()) ? null : eGa34VlEtapa.getValor());
+      queryGa34.proAddParamFmt(eGa34DsCtrObj.getText());
+      queryGa34.proAddParamFmt(getParamApp().getOperadorIdLong());
+      
+      queryGa34.proAddParamFmt(dtgGa34.getSelecionado().getGA34_NR_GARANT());
+      queryGa34.proAddParamFmt(getParamApp().getInstituicaoIdInt());
+      queryGa34.proAddParamFmt(Integer.parseInt(getParamApp().getAgenciaId()));
+      queryGa34.proAddParamFmt(nrContrato);
+      queryGa34.proAddParamFmt(Integer.parseInt(getParamApp().getSistemaId()));
+    break;
+
+    default:
+    break;
+  }
+    
+
+  
+    try {
+      queryGa34.proExecBanco();
+    }catch(Exception e) {
+      X00SU0301A.proGeraErro(e);
+    }
+    queryGa34.setClassResultSet(TGA34.class);
+    queryGa34.setRetornaResultSet(true);      
+  }
+  
+  @FXML
+  private void onAfterExcluir() {
+    X00SU0301A.proMensagemInferior(RegistroExcluidoSucesso.class);
+    controllerTelaPai.verificaDetalhesContratos();
+  }
+  
+  @FXML
+  private void proCancelar() {
+    dtgGa34.setEnable(true);
+  }
+  
+  @FXML
+  public void proLocalizarActionFiltro(ActionEvent filtro) {
+    TTILabelLocalizar rLbl = (TTILabelLocalizar) filtro.getSource();
+    rLbl.setUsaEntidadeDinamica(false);
+    TMDQuery<TGA34> rQuery = new TMDQuery<>(TTypeComando.tcmSQL);
+    rQuery.setClassResultSet(TGA34.class);
+    rQuery.setQuery(BuscaContratosGA34.class);
+    rQuery.proAddParamFmt(getParamApp().getInstituicaoIdInt());
+    rQuery.proAddParamFmt(getParamApp().getAgenciaIdInt());
+    rQuery.proAddParamFmt(Integer.parseInt(nrContrato));
+    rQuery.proAddParamFmt(getParamApp().getSistemaId());
+    rQuery.setRetornaResultSet(false);
+    rLbl.setSQLLabelLocalizarMDQuery(rQuery);
+  }
+  
+  @FXML
+  private void proOnNovo() {
+  pnlDados.setDisable(false);
+  pnlGarantia.setDisable(false);
+  pnlDetalhes.setDisable(false);
+    manut = "I";
+  numGarantia = 0;
+    cbxGA34IdTitu.setSelecionado(1);
+    cbxGA34TpConta.setSelecionado(1);
+  
+    eGa01CdTipliq.setDisable(false);
+    eGa01CdTipliq.setDescricaoEnable(false);
+  
+    eGa34NrBanlvmPrinc.setDisable(false);
+    eGa34NrBanlvmCc.setDisable(false);
+    eGa34NrBanlvmLvm.setDisable(false);
+    eGa34NrAgenCc.setDisable(false);
+    eGa34NrAgenLvm.setDisable(false);
+    eGa34NrAgenPrinc.setDisable(false);
+      
+    eGa34NrBanlvmPrinc.setDescricaoEnable(false);
+    eGa34NrBanlvmCc.setDescricaoEnable(false);
+    eGa34NrBanlvmLvm.setDescricaoEnable(false);
+    eGa34NrAgenCc.setDescricaoEnable(false);
+    eGa34NrAgenLvm.setDescricaoEnable(false);
+    eGa34NrAgenPrinc.setDescricaoEnable(false);
+    
+    nroGarantia.setValor(0);
+    nroGarantia.setDisable(true);
+    vlSaldo.setValor(0.0);
+    vlSaldo.setDisable(true);
+    vlPerc.setValor(100.0);
+  }
+
+  @FXML
+  private int actionDtVigente() {
+    int idVigen;
+    switch(cbxGa34IdVigen.getSelecionado().toString()) {
+      case DIAS :
+        eGa34QtVigen.setEnable(true);
+        idVigen = 1;
+        return idVigen;
+      case MESES :
+        eGa34QtVigen.setEnable(true);
+        idVigen = 2;
+        return idVigen;
+      case INDETERMINADA :
+        eGa34QtVigen.setDisable(true);
+        idVigen = 0;
+        return idVigen;
+      default: 
+        return 0;
+    }
+  }
+  
+  @FXML
+  private void proSelectionaItem() {
+    pnlGarantia.setDisable(true);
+    pnlDados.setDisable(true);
+    pnlDetalhes.setDisable(true);
+    crudGA34.setEntidade(dtgGa34.getSelecionado());
+    vlPerc.setValor(dtgGa34.getSelecionado().getGA34_PC_GARANT());
+    eGa01CdTipliq.setSelecionadoCD(dtgGa34.getSelecionado().getGA34_TP_GARDEF().toString());
+    eGa34NrCnpjEn.setValor(dtgGa34.getSelecionado().getGA34_NR_CNPJEN());
+  }
+  
+  @FXML
+  private void proOnEditar() {
+    manut = "A";
+    crudGA34.setEnable(true);
+    eGa01CdTipliq.setDisable(false);
+    tabBancoSelected();
+    pnlGarantia.setDisable(false);
+    pnlDados.setDisable(false);
+    pnlDetalhes.setDisable(false);
+  }
+  
+  private void tabBancoSelected() {
+    int tab = tabPaneBanco.getIndiceSelecionado();
+    switch(tab) {
+      case 0: 
+        eGa34NrBanlvmPrinc.setDisable(false);
+        eGa34NrAgenPrinc.setDisable(false);
+        if(!(dtgGa34.getItensSelecionados() == null || dtgGa34.getItensSelecionados().isEmpty())) {
+          eGa34NrBanlvmPrinc.setSelecionadoCD(dtgGa34.getSelecionado().getGA34_NR_BANCO().toString());
+          eGa34NrAgenPrinc.setSelecionadoCD(dtgGa34.getSelecionado().getGA34_NR_AGESFN().toString());
+        }
+        break;
+      case 1: 
+        eGa34NrBanlvmLvm.setDisable(false);
+        eGa34NrAgenLvm.setDisable(false);
+        if(!(dtgGa34.getItensSelecionados() == null || dtgGa34.getItensSelecionados().isEmpty())) {
+          eGa34NrBanlvmLvm.setSelecionadoCD(dtgGa34.getSelecionado().getGA34_NR_BANLVM().toString());
+          eGa34NrAgenLvm.setSelecionadoCD(dtgGa34.getSelecionado().getGA34_NR_AGELVM().toString());
+        }
+        break;
+      case 2:
+        eGa34NrBanlvmCc.setDisable(false);
+        eGa34NrAgenCc.setDisable(false);
+        if(!(dtgGa34.getItensSelecionados() == null || dtgGa34.getItensSelecionados().isEmpty())) {
+          eGa34NrBanlvmCc.setSelecionadoCD(dtgGa34.getSelecionado().getGA34_NR_BANCC().toString());
+          eGa34NrAgenCc.setSelecionadoCD(dtgGa34.getSelecionado().getGA34_NR_AGECC().toString());
+        }
+        break;
+      default: 
+      break;
+    }
+  }
+  
+  @FXML
+  private void onLocalizarBancoPrinc() {
+    TMDQuery<TTG14> queryTpBaixa = new TMDQuery<>(TTypeComando.tcmSQL);
+    queryTpBaixa.setQuery(BuscaBanco.class);
+    queryTpBaixa.setClassResultSet(TTG14.class);
+    queryTpBaixa.setRetornaResultSet(true);
+    eGa34NrBanlvmPrinc.setSQLLabelLocalizarMDQuery(queryTpBaixa);  
+  }
+  
+  @FXML
+  private void onLocalizarBancoLvm() {
+    TMDQuery<TTG14> queryTpBaixa = new TMDQuery<>(TTypeComando.tcmSQL);
+    queryTpBaixa.setQuery(BuscaBanco.class);
+    queryTpBaixa.setClassResultSet(TTG14.class);
+    queryTpBaixa.setRetornaResultSet(true);
+    eGa34NrBanlvmLvm.setSQLLabelLocalizarMDQuery(queryTpBaixa);  
+  }
+  
+  @FXML
+  private void onLocalizarBancoCc() {
+    TMDQuery<TTG14> queryTpBaixa = new TMDQuery<>(TTypeComando.tcmSQL);
+    queryTpBaixa.setQuery(BuscaBanco.class);
+    queryTpBaixa.setClassResultSet(TTG14.class);
+    queryTpBaixa.setRetornaResultSet(true);
+    eGa34NrBanlvmCc.setSQLLabelLocalizarMDQuery(queryTpBaixa);  
+  }
+  
+  @FXML
+  private void onLocalizarAgenPrinc() {
+    TMDQuery<TTG15> queryTpBaixa = new TMDQuery<>(TTypeComando.tcmSQL);
+    queryTpBaixa.setQuery(BuscaAgen.class);
+    queryTpBaixa.setClassResultSet(TTG15.class);
+    queryTpBaixa.setRetornaResultSet(true);
+    eGa34NrAgenPrinc.setSQLLabelLocalizarMDQuery(queryTpBaixa);  
+  }
+  
+  @FXML
+  private void onLocalizarAgenLvm() { 
+    TMDQuery<TTG15> queryTpBaixa = new TMDQuery<>(TTypeComando.tcmSQL);
+    queryTpBaixa.setQuery(BuscaAgen.class);
+    queryTpBaixa.setClassResultSet(TTG15.class);
+    queryTpBaixa.setRetornaResultSet(true);
+    eGa34NrAgenLvm.setSQLLabelLocalizarMDQuery(queryTpBaixa);  
+  }
+  
+  @FXML
+  private void onLocalizarAgenCc() {
+    TMDQuery<TTG15> queryTpBaixa = new TMDQuery<>(TTypeComando.tcmSQL);
+    queryTpBaixa.setQuery(BuscaAgen.class);
+    queryTpBaixa.setClassResultSet(TTG15.class);
+    queryTpBaixa.setRetornaResultSet(true);
+    eGa34NrAgenCc.setSQLLabelLocalizarMDQuery(queryTpBaixa);  
+  }
+  
+  private void dtgContratos() {
+    TMDQuery<TGA34> rQuery = new TMDQuery<>(TTypeComando.tcmSQL);
+    TX18SF0104A tx18sf01104a = new TX18SF0104A();
+
+    rQuery.setQuery(BuscaContratosGA34.class);
+    rQuery.setRetornaResultSet(true);
+    rQuery.setClassResultSet(TGA34.class);
+    rQuery.proAddParamFmt(getParamApp().getInstituicaoIdInt());
+    rQuery.proAddParamFmt(getParamApp().getAgenciaIdInt());
+    rQuery.proAddParamFmt(nrContrato);
+    rQuery.proAddParamFmt(Integer.parseInt(getParamApp().getSistemaId()));
+    try {
+      rQuery.proExecBanco();
+      if (rQuery.getArrRetorno() != null) {
+        dtgGa34.setDataProvider(rQuery.getArrRetorno());
+        dtgGa34.setEntidade(rQuery.getArrRetorno());
+        tx18sf01104a.setIS_SELECIONADO(true);
+        
+      }else {
+        tx18sf01104a.setIS_SELECIONADO(false);
+      }
+    }
+    catch (Exception e) {
+      X00SU0301A.proGeraErro(OcorreuErroGa34.class, e);
+    }
+  }
+  
+  private void numGarantiaGa03() {
+    TMDQuery<TGA03> rQuery = new TMDQuery<>(TTypeComando.tcmSQL);
+  
+    rQuery.setQuery(NumGarantGa03.class);
+    rQuery.setRetornaResultSet(true);
+    rQuery.setClassResultSet(TGA03.class);
+    rQuery.proAddParamFmt(getParamApp().getInstituicaoIdInt());
+    rQuery.proAddParamFmt(getParamApp().getAgenciaIdInt());
+    rQuery.proAddParamFmt(nrContrato);
+    rQuery.proAddParamFmt(Integer.parseInt(getParamApp().getSistemaId()));
+    try {
+      rQuery.proExecBanco();
+      if (!rQuery.getArrRetorno().isEmpty()) {
+        numGarantia = rQuery.getArrRetorno().get(0).getGA03_NR_GARANT();
+      }
+    }
+    catch (Exception e) {
+      X00SU0301A.proGeraErro(ErroGeraNumGarantGa34.class, e);
+    }
+  }
+  
+  @FXML
+  private void onLocalizarTpBaixa() {
+    TMDQuery<TGA01> queryTpBaixa = new TMDQuery<>(TTypeComando.tcmSQL);
+    queryTpBaixa.setQuery(BuscaTpContra.class);
+    queryTpBaixa.setRetornaResultSet(true);
+    queryTpBaixa.setClassResultSet(TGA01.class);
+    queryTpBaixa.proAddParamFmt(getParamApp().getInstituicaoIdInt());
+    queryTpBaixa.proAddParamFmt(eGa01CdTipliq.getCodigo().isEmpty() ? GA34TPGARANT : eGa01CdTipliq.getCodigo());
+    eGa01CdTipliq.setSQLLabelLocalizarMDQuery(queryTpBaixa);
+  }
+  
+  private void recuperaParametros() {
+    if(TParamAppCliente.getSession(SESSION_CONTRATO, false) != null) {
+      nrContrato = ((Long)TParamAppCliente.getSession(SESSION_CONTRATO)).toString();
+    }
+    if(TParamAppCliente.getSession(SESSION_PRODUTO, false) != null) {
+      cdProduto = ((Integer)TParamAppCliente.getSession(SESSION_PRODUTO)).toString();
+    }
+  }
+  
+  public boolean consisteCampos() {
+    String rInconsistencias = "";
+    
+    // Tipo garantia
+    if (eGa01CdTipliq.getValorBusca() == null || eGa01CdTipliq.getValorBusca().isEmpty())
+      rInconsistencias = rInconsistencias + " > Tipo garantia deve ser preenchido.\n";
+    
+    // Nr. contrato garantia
+    if (nrContratoGarant.getValor() == null || nrContratoGarant.getValor().isEmpty())
+      rInconsistencias = rInconsistencias + " > Nr. contrato garantia deve ser preenchido.\n";
+    
+    // Desc. do contrato
+    if (dsGarantia.getText() == null && dsGarantia.getText().isEmpty())
+      rInconsistencias = rInconsistencias + " > Desc. do contrato deve ser preenchido.\n";
+
+    // Havendo inconsistências
+    if (!rInconsistencias.equals("")) {
+      rInconsistencias = "Foram encontradas as seguintes inconsistências:\n\n" + rInconsistencias;
+      // Apresenta mensagem ao usuário
+      X00SU0301A.proMensagem(controllerTelaPai.getTTIWindow(), rInconsistencias);
+      return false;
+    }
+    return true;
+  }
+  
+  @FXML 
+  private void localizarCEP() {
+    TMDQuery<?> localizaCEP = new TMDQuery<>(TTypeComando.tcmSQL);
+    localizaCEP.setQuery(BuscaCEP.class);    
+    localizaCEP.setRetornaResultSet(true);    
+    lblNrCEP.setSQLLabelLocalizarMDQuery(localizaCEP); 
+  }
+  
+  @FXML
+  private void afterLocalizarCEP() {
+    if(lblNrCEP.getCodigo() != null && !lblNrCEP.getCodigo().isEmpty()) {
+      TMDQuery<TG05> preencheCamposCEP = new TMDQuery<>(TTypeComando.tcmSQL);
+      preencheCamposCEP.setQuery(PreencheCamposCEP.class);
+      preencheCamposCEP.setRetornaResultSet(true);
+      preencheCamposCEP.setClassResultSet(TG05.class);
+      preencheCamposCEP.proAddParamFmt(lblNrCEP.getCodigo());
+      try {
+        preencheCamposCEP.proExecBanco();
+      }
+      catch (Exception e) {
+        X00SU0301A.proGeraErro(X00SU0301A.fncMgsProperties(ErroBuscaCEP.class), e);
+      }
+  
+      if(preencheCamposCEP.getArrRetorno() != null && !preencheCamposCEP.getArrRetorno().isEmpty()) {
+        eGa34NmEnd.setText(preencheCamposCEP.getArrRetorno().get(0).getTG05_NM_LOGABR());
+        eGa34NmBairro.setText(preencheCamposCEP.getArrRetorno().get(0).getTG04_NM_BAIRR());
+        eGa34NmCidade.setText(preencheCamposCEP.getArrRetorno().get(0).getCB06_NM_MUNICI());
+        eGa34SgEstado.setText(preencheCamposCEP.getArrRetorno().get(0).getTG05_CD_ESTBR());                       
+      }
+      else {
+        eGa34NmEnd.setText("");
+        eGa34NmBairro.setText("");
+        eGa34NmCidade.setText("");
+        eGa34SgEstado.setText("");       
+      }
+    } 
+    else {
+      eGa34NmEnd.setText("");
+      eGa34NmBairro.setText("");
+      eGa34NmCidade.setText("");
+      eGa34SgEstado.setText("");      
+    }
+  }
+  
+  @FXML
+  private void onNovaPresta() {
+  if(dtgGa34.getSelecionado() != null)
+      onDuploClickPrestacoes();
+  else
+      X00SU0301A.fncMgsProperties(SelecioneContrato.class);
+  }
+  
+  @FXML
+  private void onDuploClickPrestacoes() {
+    TTIWindow window = X00SU0301A.fncExibirFormModal(this.getClass(), null, "X18SF0104T", "Prestações");
+    ((X18SF0104T)window.getController()).proRecuperaCampos(dtgGa34.getSelecionado().getGA34_NR_CONTRA(), nrContratoGarant.getValor(), nroGarantia.getValor());        
+  }
+  
+  public void setControllerPai(X18SF0104A controller) {
+    this.controllerTelaPai = controller;
+  } 
+  
+  private TParamAppCliente getParamApp() {
+    return TParamAppCliente.getInstance();
+  }
+
+  @AProperties(Mensagem = "Selecione um contrato.")
+  private class SelecioneContrato{}
+  
+  @AProperties(Mensagem = "Erro durante a gravação do registro na tabela.")
+  private class ErroDuranteGravacaoRegTbl{}
+  
+  @AProperties(Mensagem = "Ocorreu um erro ao retornar os registros da tabela GA34.")
+  private class OcorreuErroGa34{}
+  
+  @AProperties(Mensagem = "Ocorreu um erro ao gerar número da garantia.")
+  private class ErroGeraNumGarantGa34{}
+  
+  @AProperties(Mensagem = "Registro salvo com sucesso.")
+  private class RegistroSalvoSucesso {}
+  
+  @AProperties(Mensagem = "Registro excluído com sucesso.")
+  private class RegistroExcluidoSucesso{}
+  
+  @AProperties(Mensagem = "Erro ao executar SP_LS180004020.")
+  private class ErroExecLs180004020{}
+  
+  @AProperties(Mensagem = "Erro ao localizar dados.")
+  public class ErroLocalizDados {}
+  
+  @AProperties(Mensagem = "Houve um erro ao buscar CEP.")  
+  public class ErroBuscaCEP{}
+
+  @ABDComando(Comando =                                            
+    "SELECT                                                   \n"+                                                
+    "  CASE                                                   \n"+
+    "    WHEN TG03_ST_LOCALI = 0 THEN                         \n"+
+    "      REPLICATE('0',8-LEN(TG03_NR_CEP)) +                \n"+
+    "      CONVERT(VARCHAR, TG03_NR_CEP)                      \n"+
+    "    ELSE                                                 \n"+
+    "      REPLICATE('0',8-LEN(TG05_NR_CEP)) +                \n"+
+    "      CONVERT(VARCHAR, TG05_NR_CEP)                      \n"+
+    "  END AS TG05_NR_CEP,                                    \n"+
+    "  COALESCE(TG05_TP_LOGRAD, '') TG05_TP_LOGRAD,           \n"+
+    "  COALESCE(TG05_NM_LOGRAD, '') TG05_NM_LOGRAD,           \n"+
+    "  COALESCE(TG05_NM_LOGABR, '') TG05_NM_LOGABR,           \n"+
+    "  COALESCE(TG04_NM_BAIRRR, '') TG04_NM_BAIRR,            \n"+
+    "  COALESCE(TG03_NM_LOCALI, '') TG03_NM_LOCALI,           \n"+
+    "  COALESCE(TG03_CD_ESTBR, TG05_CD_ESTBR) TG05_CD_ESTBR,  \n"+
+    "  TG03_CD_IBGE,                                          \n"+
+    "  CB06_NR_HABITA,                                        \n"+
+    "  COALESCE(TG45_DS_REG, '') TG45_DS_REG                  \n"+
+    "FROM TG03                                                \n"+
+    "  LEFT JOIN TG05 ON (                                    \n"+
+    "    TG05_CD_LOCALI = TG03_CD_LOCALI)                     \n"+
+    "  LEFT JOIN TG04 ON (                                    \n"+
+    "    TG04_CD_LOCALI = TG05_CD_LOCALI                      \n"+
+    "  AND TG04_CD_BAIRRO = TG05_CD_BAIRRI)                   \n"+
+    "  LEFT JOIN CB06 ON (                                    \n"+
+    "    CB06_CD_MUNICI = TG03_CD_IBGE)                       \n"+
+    "  LEFT JOIN TG46 ON (                                    \n"+
+    "    TG46_CD_MUNICI = CB06_CD_MUNICI)                     \n"+
+    "  LEFT JOIN TG45 ON (                                    \n"+
+    "    TG45_CD_REG = TG46_CD_REG)                           \n"+
+    "WHERE                                                    \n"+
+    "  TG03_ST_LOCALI IN (0, 1)                               \n")                               
+  private class BuscaCEP {}     
+    
+    @ABDComando(Comando =
+      "SELECT                                                \n"+
+      "  TG05_NR_CEP   ,                                     \n"+
+      "  TG05_NM_LOGRAD,                                     \n"+
+      "  TG05_NM_LOGABR,                                     \n"+
+      "  CONVERT(VARCHAR(30),TG04_NM_BAIRR) TG04_NM_BAIRR,   \n"+
+      "  TG03_CD_IBGE  ,                                     \n"+
+      "  CB06_NM_MUNICI,                                     \n"+
+      "  TG05_CD_ESTBR ,                                     \n"+
+      "  CB06_CD_MUNICI,                                     \n"+
+      "  TG45_DS_REG                                         \n"+
+      "FROM                                                  \n"+
+      "  SFINANCE_CD..FC_CD0100053(%s) LEFT JOIN CB06 ON (   \n"+
+      "    TG03_CD_IBGE = CB06_CD_MUNICI                     \n"+
+      "  ) LEFT JOIN TG46 ON (                               \n"+
+      "    CB06_CD_MUNICI = TG46_CD_MUNICI                   \n"+
+      "  ) LEFT JOIN TG45 ON (                               \n"+
+      "    TG46_CD_REG = TG45_CD_REG                         \n"+
+      "  )                                                   \n")
+  private class PreencheCamposCEP{}
+  
+  @ABDComando(Comando =
+    "SELECT                     \n" +
+    "  *                        \n" +
+    "FROM                       \n" +
+    "  GA34                     \n" +
+    "WHERE                      \n" +
+    "    GA34_NR_INST   = %s    \n" + 
+    "AND GA34_NR_AGEN   = %s    \n" + 
+    "AND GA34_NR_CONTRA = %s    \n" + 
+    "AND GA34_CD_SIST   = %s      ")
+  private class BuscaContratosGA34{}
+  
+  @ABDComando(Comando =
+    "SELECT                                    \n" +
+    "  MAX(GA03_NR_GARANT)+1 GA03_NR_GARANT    \n" +
+    "FROM                                      \n" +
+    "  GA03                                    \n" +
+    "WHERE                                     \n" +
+    "    GA03_NR_INST   = %s                   \n" + 
+    "AND GA03_NR_AGEN   = %s                   \n" + 
+    "AND GA03_NR_CONTRA = %s                   \n" + 
+    "AND GA03_CD_SIST   = %s                     ")
+  private class NumGarantGa03{}
+  
+  @ABDComando(Comando =
+    "SELECT                           \n"+
+    "  GA01_TP_GARANT,                \n"+
+    "  GA01_DS_GARANT                 \n"+
+    "FROM                             \n"+
+    "  GA01                           \n"+
+    "WHERE                            \n"+
+    "    GA01_NR_INST =  %s           \n"+
+    "AND GA01_TP_GARANT IN (20, 21)   \n"+
+    "ORDER BY 1, 2                      ")
+  private class BuscaTpContra {}
+  
+  @ABDComando(Comando =
+    "SELECT                 \n"+
+    "  TG14_NR_BANCO,       \n"+
+    "  TG14_NM_BANCO        \n"+
+    "FROM                   \n"+
+    "  TG14                 \n"+
+    "ORDER BY 1, 2            ")
+  private class BuscaBanco {}
+   
+  @ABDComando(Comando =
+    "SELECT                 \n"+
+    "  TG15_NR_BANCO,       \n"+
+    "  TG15_NR_AGESFN,      \n"+
+    "  TG15_NM_AGESFN       \n"+
+    "FROM                   \n"+
+    "  TG15                 \n"+
+    "ORDER BY 1, 2            ")
+  private class BuscaAgen {}
+  
+  @ABDComando(Comando =
+    "INSERT INTO                  \n" +
+    "  GA34(                      \n" +
+    "    GA34_NR_GARANT,          \n" +
+    "    GA34_NR_INST,            \n" +
+    "    GA34_NR_AGEN,            \n" +
+    "    GA34_CD_CLIENT,          \n" +
+    "    GA34_NR_CONTRA,          \n" +
+    "    GA34_CD_SIST,            \n" +
+    "    GA34_CD_PRODUT,          \n" +
+    "    GA34_TP_GARANT,          \n" +
+    "    GA34_TP_GARDEF,          \n" +
+    "    GA34_NR_CTRGAR,          \n" +
+    "    GA34_DS_CONTRA,          \n" +
+    "    GA34_NR_BANCO,           \n" +
+    "    GA34_NR_AGESFN,          \n" +
+    "    GA34_NR_CONTA,           \n" +
+    "    GA34_CD_DVCTA,           \n" +
+    "    GA34_NR_BANLVM,          \n" +
+    "    GA34_NR_AGELVM,          \n" +
+    "    GA34_NR_CONLVM,          \n" +
+    "    GA34_CD_DVLVM,           \n" +
+    "    GA34_NR_BANCC,           \n" +
+    "    GA34_NR_AGECC,           \n" +
+    "    GA34_NR_CONTCC,          \n" +
+    "    GA34_CD_DVCC,            \n" +
+    "    GA34_VL_SALDO,           \n" +
+    "    GA34_ID_TITU,            \n" +
+    "    GA34_TP_CONTA,           \n" +
+    "    GA34_PC_GARANT,          \n" +
+    "    GA34_DT_ENTRAD,          \n" +
+    "    GA34_NM_ENTPAG,          \n" +
+    "    GA34_NR_CNPJEN,          \n" +
+    "    GA34_NM_END,             \n" +
+    "    GA34_NR_END,             \n" +
+    "    GA34_DS_COMPL,           \n" +
+    "    GA34_NM_BAIRRO,          \n" +
+    "    GA34_NM_CIDADE,          \n" +
+    "    GA34_SG_ESTADO,          \n" +
+    "    GA34_NR_CEP,             \n" +
+    "    GA34_ID_VIGEN,           \n" +
+    "    GA34_QT_VIGEN,           \n" +
+    "    GA34_VL_MENSAL,          \n" +
+    "    GA34_VL_ETAP,            \n" +
+    "    GA34_DS_CTROBJ,          \n" +
+    "    GA34_CD_OPESIS,          \n" +
+    "    GA34_DT_INCSIS,          \n" +
+    "    GA34_DT_ATUSIS           \n" +
+    "  )                          \n" +
+    "VALUES                       \n" +
+    "  (%s,                       \n" +  //GA34_NR_GARANT
+    "  %s,                        \n" +  //GA34_NR_INST
+    "  %s,                        \n" +  //GA34_NR_AGEN
+    "  0,                         \n" +  //GA34_CD_CLIENT
+    "  %s,                        \n" +  //GA34_NR_CONTRA
+    "  %s,                        \n" +  //GA34_CD_SIST
+    "  %s,                        \n" +  //GA34_CD_PRODUT
+    "  %s,                        \n" +  //GA34_TP_GARANT
+    "  %s,                        \n" +  //GA34_TP_GARDEF
+    "  '%s',                      \n" +  //GA34_NR_CTRGAR
+    "  '%s',                      \n" +  //GA34_DS_CONTRA
+    "  %s,                        \n" +  //GA34_NR_BANCO
+    "  %s,                        \n" +  //GA34_NR_AGESFN
+    "  %s,                        \n" +  //GA34_NR_CONTA
+    "  '%s',                      \n" +  //GA34_CD_DVCTA
+    "  %s,                        \n" +  //GA34_NR_BANLVM
+    "  %s,                        \n" +  //GA34_NR_AGELVM
+    "  %s,                        \n" +  //GA34_NR_CONLVM
+    "  '%s',                      \n" +  //GA34_CD_DVLVM
+    "  %s,                        \n" +  //GA34_NR_BANCC
+    "  %s,                        \n" +  //GA34_NR_AGECC
+    "  %s,                        \n" +  //GA34_NR_CONTCC
+    "  '%s',                      \n" +  //GA34_CD_DVCC
+    "  %s,                        \n" +  //GA34_VL_SALDO
+    "  null,                      \n" +  //GA34_ID_TITU
+    "  null,                      \n" +  //GA34_TP_CONTA
+    "  %s,                        \n" +  //GA34_PC_GARANT
+    "  %s,                        \n" +  //GA34_DT_ENTRAD
+    "  '%s',                      \n" +  //GA34_NM_ENTPAG
+    "  '%s',                      \n" +  //GA34_NR_CNPJEN
+    "  '%s',                      \n" +  //GA34_NM_END
+    "  '%s',                      \n" +  //GA34_NR_END
+    "  '%s',                      \n" +  //GA34_DS_COMPL
+    "  '%s',                      \n" +  //GA34_NM_BAIRRO
+    "  '%s',                      \n" +  //GA34_NM_CIDADE
+    "  '%s',                      \n" +  //GA34_SG_ESTADO
+    "  '%s',                      \n" +  //GA34_NR_CEP
+    "  %s,                        \n" +  //GA34_ID_VIGEN
+    "  %s,                        \n" +  //GA34_QT_VIGEN
+    "  %s,                        \n" +  //GA34_VL_MENSAL
+    "  %s,                        \n" +  //GA34_VL_ETAP
+    "  '%s',                      \n" +  //GA34_DS_CTROBJ
+    "  %s,                        \n" +  //GA34_CD_OPESIS
+    "  GETDATE(),                 \n" +  
+    "  GETDATE())                    ")  
+  private class IncluirContrato {}
+  
+  @ABDComando(Comando =
+    "UPDATE                            \n" +
+    "  GA34 SET                        \n" +
+    "    GA34_CD_PRODUT = %s,          \n" +
+    "    GA34_TP_GARANT = %s,          \n" +
+    "    GA34_DS_CONTRA = '%s',        \n" +
+    "    GA34_NR_BANCO = %s,           \n" +
+    "    GA34_NR_AGESFN = %s,          \n" +
+    "    GA34_NR_CONTA = %s,           \n" +
+    "    GA34_CD_DVCTA = '%s',         \n" +
+    "    GA34_NR_BANLVM = %s,          \n" +
+    "    GA34_NR_AGELVM = %s,          \n" +
+    "    GA34_NR_CONLVM = %s,          \n" +
+    "    GA34_CD_DVLVM = '%s',         \n" +
+    "    GA34_NR_BANCC = %s,           \n" +
+    "    GA34_NR_AGECC = %s,           \n" +
+    "    GA34_NR_CONTCC = %s,          \n" +
+    "    GA34_CD_DVCC = '%s',          \n" +
+    "    GA34_VL_SALDO = %s,           \n" +
+    "    GA34_ID_TITU = null,          \n" +
+    "    GA34_TP_CONTA = null,         \n" +
+    "    GA34_PC_GARANT = %s,          \n" +
+    "    GA34_DT_ENTRAD = %s,          \n" +
+    "    GA34_NM_ENTPAG = '%s',        \n" +
+    "    GA34_NR_CNPJEN = '%s',        \n" +
+    "    GA34_NM_END = '%s',           \n" +
+    "    GA34_NR_END = '%s',           \n" +
+    "    GA34_DS_COMPL = '%s',         \n" +
+    "    GA34_NM_BAIRRO = '%s',        \n" +
+    "    GA34_NM_CIDADE = '%s',        \n" +
+    "    GA34_SG_ESTADO = '%s',        \n" +
+    "    GA34_NR_CEP = '%s',           \n" +
+    "    GA34_ID_VIGEN = %s,           \n" +
+    "    GA34_QT_VIGEN = %s,           \n" +
+    "    GA34_VL_MENSAL = %s,          \n" +
+    "    GA34_VL_ETAP = %s,            \n" +
+    "    GA34_DS_CTROBJ = '%s',        \n" +
+    "    GA34_CD_OPESIS = %s,          \n" +
+    "    GA34_DT_ATUSIS = GETDATE()    \n" +
+    "WHERE                             \n" +
+  "    GA34_NR_GARANT = %s           \n" +
+  "AND GA34_NR_INST = %s             \n" +
+  "AND GA34_NR_AGEN = %s             \n" +
+  "AND GA34_CD_CLIENT = 0            \n" +
+  "AND GA34_NR_CONTRA = %s           \n" +
+    "AND GA34_CD_SIST = %s             \n" )
+  private class EditarContrato {}
+}
