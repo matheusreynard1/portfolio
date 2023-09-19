@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  :: EMPRESA    : Sinqia                                                       ::
+  :: SISTEMA    : SQ Crédito                                                   ::
+  :: MÓDULO     : Relatório - Cancelamentos                                    ::
+  :: OBSERVAÇÃO :                                                              ::
+  ::- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -::
+  :: PROGRAMADOR:                                                              ::
+  :: DATA       :                                           VERSÃO FXML:       ::
+  :: ALTERAÇÃO  :                                                              ::
+  ::- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -::
+  :: PROGRAMADOR: Matheus Reynard                                              ::
+  :: DATA       : 28/04/2022                                VERSÃO FXML:     2 ::
+  :: ALTERAÇÃO  : SQCWB-49321 - Chamado do Teste QA                            ::
+  ::              Adicionado o nome resumido da agência; Corrigido descrição   ::
+  ::              do C.Resp; Adicionado máscaras CNPJ e correção campo CNPJ    ::
+  ::- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -::
+  :: PROGRAMADOR: Matheus Reynard                                              ::
+  :: DATA       : 31/03/2022                                VERSÃO FXML:     1 ::
+  :: ALTERAÇÃO  : Primeira Versão                                              ::
+  ::              SQCWB-46276 - Migração Relatórios - Cancelamentos            ::
+  :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+ -->
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import x00sp03.x00c.TTIVBox?>
+<?import x00sp03.x00c.TTIHBox?>
+<?import x00sp03.x00c.TTIAnchorPane?>
+<?import x00sp03.x00c.TTILabel?> 
+<?import x00sp03.x00c.TTILabelLocalizar?>
+<?import x00sp03.x00c.TTIColuna?>
+<?import x00sp03.x00c.TTIComboBox?>
+<?import x00sp03.x00c.TTIEdit?>
+<?import x00sp03.x00c.TTITitledPane?>
+<?import x00sp03.x00c.TTITabPane?>
+<?import x00sp03.x00c.TTITab?>
+<?import x00sp03.x00c.TTICheckBox?>
+
+<TTIAnchorPane fx:controller="x04sp01.view.X04SR0103G" xmlns:fx="http://javafx.com/fxml" VBox.vgrow="ALWAYS" prefWidth="500" HBox.hgrow="ALWAYS">
+  <TTIVBox>
+    <TTIHBox VBox.vgrow="ALWAYS" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" styleClass="stsCnvBgContornoSA" minWidth="450">
+      <TTILabelLocalizar label="Instituição:" codWidth="72" HBox.hgrow="ALWAYS" tipoMascara="DIG_VERIF1" disable="true" utilizaConsultaDinamica="true" aliasCod="IN05_NR_INST" aliasDesc="IN05_NM_COINST" campoCod="IN05_NR_INST" fx:id="lbLocalizarInst" limparAoNaoEncontrar="true" validaVazioCD="true" descricaoCD="Instituição" codigoEnable="false" descricaoEnable="false">
+        <TTIColuna dataField="IN05_NR_INST"   text="Nr. inst." tipoMascara="DIG_VERIF" textAlign="CENTER_RIGHT" />
+        <TTIColuna dataField="IN05_NM_COINST" text="Nome completo inst." />
+        <TTIColuna dataField="IN05_NR_CNPJ"   text="CNPJ" tipoMascara="CNPJ" />
+        <TTIColuna dataField="IN05_DS_CIDADE" text="Cidade" />
+      </TTILabelLocalizar>
+    </TTIHBox>
+    <TTITitledPane text="Seleção" expanded="true" animated="false" collapsible="false" textAlignment="LEFT" minWidth="450">
+      <TTIVBox>
+        <TTIHBox VBox.vgrow="ALWAYS" alignment="CENTER_LEFT">
+          <TTILabel text="Período:   " HBox.hgrow="NEVER" />
+          <TTIEdit campo="EM01_DT_MOVLIB" fx:id="deDtMov" tipoMascara="DATA" prefWidth="72" />
+          <TTILabel text="até" HBox.hgrow="NEVER" />
+          <TTIEdit campo="EM01_DT_VCTULT" fx:id="ateDtMov" tipoMascara="DATA" prefWidth="72" />
+        </TTIHBox>
+        <TTIHBox VBox.vgrow="ALWAYS" alignment="CENTER_LEFT">
+        <TTILabelLocalizar fx:id="lbLocalizarAgen" label="Agência" lblWidth="50" codWidth="72" HBox.hgrow="ALWAYS" tipoMascara="DIG_VERIF1" utilizaConsultaDinamica="true" campoCod="IN06_NR_INST" aliasCod="IN06_NR_AGEN" aliasDesc="IN06_NM_COINST" codMaxChar="5" codNumerico="true" limparAoNaoEncontrar="true" validaVazioCD="true" descricaoCD="Agência" utilizaInstituicaoParamApp="true">
+          <TTIColuna text="Nr. Inst" larguraPercentual="12" dataField="IN06_NR_INST" tipoMascara="DIG_VERIF" />
+           <TTIColuna text="Nr. agência" larguraPercentual="12" dataField="IN06_NR_AGEN" tipoMascara="DIG_VERIF" />
+           <TTIColuna text="Nome completo" larguraPercentual="30" dataField="IN06_NM_COINST" />
+           <TTIColuna text="Nome resumido" larguraPercentual="25" dataField="IN06_NM_REINST" />
+           <TTIColuna text="CNPJ" larguraPercentual="20" dataField="IN06_NR_CNPJ" tipoMascara="CNPJ" />
+           <TTIColuna text="Cidade" larguraPercentual="15" dataField="IN06_DS_CIDADE" />
+          <TTIColuna text="Estado" larguraPercentual="10" dataField="IN06_CD_ESTBR" />
+        </TTILabelLocalizar>
+        </TTIHBox>
+        <TTIHBox VBox.vgrow="ALWAYS" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" minWidth="450">
+          <TTILabelLocalizar label="C. Resp:" lblWidth="50" codWidth="72" HBox.hgrow="ALWAYS" tipoMascara="DIG_VERIF1" utilizaConsultaDinamica="true" aliasCod="TG08_NR_CRES" aliasDesc="TG08_DS_CRES" campoCod="TG08_NR_CRES" fx:id="lbLocalizarCResp" limparAoNaoEncontrar="true" validaVazioCD="true" descricaoCD="C. Resp" utilizaInstituicaoParamApp="true">
+            <TTIColuna dataField="TG08_NR_CRES" text="Nr. C.Resp." tipoMascara="DIG_VERIF" textAlign="CENTER_RIGHT" />
+            <TTIColuna dataField="TG08_DS_CRES" text="Descrição" />
+          </TTILabelLocalizar>
+        </TTIHBox>
+        <TTIHBox VBox.vgrow="ALWAYS" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" minWidth="450">
+          <TTILabelLocalizar label="Produto:" lblWidth="50" codWidth="72" HBox.hgrow="ALWAYS" tipoMascara="DIG_VERIF1" utilizaConsultaDinamica="true" aliasCod="EM02_CD_PRODUT" aliasDesc="EM02_DS_PRODUC" campoCod="EM02_CD_PRODUT" fx:id="lbLocalizarProd" limparAoNaoEncontrar="true" validaVazioCD="true" descricaoCD="Produto" utilizaInstituicaoParamApp="true">
+            <TTIColuna dataField="EM02_CD_PRODUT" text="Cod." tipoMascara="DIG_VERIF" textAlign="CENTER_RIGHT" />
+            <TTIColuna dataField="EM02_DS_PRODUC" text="Descrição" />
+            <TTIColuna dataField="EM02_CD_GRPPRO" text="Cod. de grupo" />
+            <TTIColuna dataField="EM02_CD_MODALI" text="Cod. modalidade" />
+          </TTILabelLocalizar>
+        </TTIHBox>
+        <TTIHBox VBox.vgrow="ALWAYS" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" minWidth="450">
+          <TTILabelLocalizar label="Cliente" lblWidth="50" codWidth="72" HBox.hgrow="ALWAYS" tipoMascara="DIG_VERIF1" utilizaConsultaDinamica="true" aliasCod="CL01_NR_CLIENT" aliasDesc="CL01_NM_CLIENT" campoCod="CL01_NR_CLIENT" fx:id="lbLocalizarCli" limparAoNaoEncontrar="true" validaVazioCD="true" descricaoCD="Filial" utilizaInstituicaoParamApp="true">
+            <TTIColuna dataField="CL01_NR_INST" text="Nr. Inst." tipoMascara="DIG_VERIF"/>
+            <TTIColuna dataField="CL01_NR_CLIENT" text="Nr. do cliente" tipoMascara="DIG_VERIF" textAlign="CENTER_RIGHT" />
+            <TTIColuna dataField="CL01_NR_CPFCNPJ" text="CPF/CNPJ" tipoMascara="CPFCNPJ"/>
+            <TTIColuna dataField="CL01_NM_CLIENT" text="Nome" />
+          </TTILabelLocalizar>
+          <TTILabelLocalizar label="Contrato" lblWidth="55" codWidth="115" HBox.hgrow="ALWAYS" tipoMascara="DIG_VERIF1" utilizaConsultaDinamica="true" aliasCod="EM01_NR_CONTRA" campoCod="EM01_NR_CONTRA" fx:id="lbLocalizarContra" limparAoNaoEncontrar="true" validaVazioCD="true" descricaoCD="Filial" utilizaInstituicaoParamApp="true" utilizaAgenciaParamApp="true" descricaoVisible="false" onAfterLocalizar="#onAfterLocalizarContrato" onLabelLocalizarActionFiltro="#filtroLbLocalizarContra">
+            <TTIColuna dataField="EM01_NR_AGEN"   text="Nr. Agência"   tipoMascara="DIG_VERIF" textAlign="CENTER_RIGHT" />
+            <TTIColuna dataField="EM01_CD_CLIENT" text="Cod. Cliente"  tipoMascara="DIG_VERIF" textAlign="CENTER_RIGHT" />
+            <TTIColuna dataField="EM01_CD_PRODUT" text="Cod. Produto"  tipoMascara="DIG_VERIF" textAlign="CENTER_RIGHT" />
+            <TTIColuna dataField="EM01_NR_CONTRA" text="Cod. Contrato" tipoMascara="DIG_VERIF" textAlign="CENTER_RIGHT" />
+            <TTIColuna dataField="EM01_NR_CRES"   text="Nr. C. Resp"   tipoMascara="DIG_VERIF" textAlign="CENTER_RIGHT" />
+          </TTILabelLocalizar>
+        </TTIHBox>
+      </TTIVBox>
+    </TTITitledPane>
+    <TTITitledPane text="Situação do Contrato" expanded="true" animated="false" collapsible="false" textAlignment="LEFT">
+      <TTIHBox VBox.vgrow="ALWAYS" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS" minWidth="450">
+        <TTICheckBox text="Desembolsos cancelados" prefWidth="150" selected="true" valorTrue="64"  valorFalse="0" fx:id="chkbxDesCancelados" />
+        <TTICheckBox text="Propostas canceladas  " prefWidth="150" selected="true" valorTrue="128" valorFalse="0" fx:id="chkbxPropCanceladas" />
+      </TTIHBox>
+    </TTITitledPane>
+  </TTIVBox>
+</TTIAnchorPane>
+  

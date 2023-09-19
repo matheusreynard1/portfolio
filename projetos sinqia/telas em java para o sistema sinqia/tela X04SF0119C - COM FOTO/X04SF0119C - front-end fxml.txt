@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  :: EMPRESA    : Sinqia                                                          ::
+  :: SISTEMA    : SQ Crédito                                                      ::
+  :: MÓDULO     : Fechamento custódia e WF                                        ::
+  :: OBSERVAÇÃO :                                                                 ::
+  ::- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ::
+  :: PROGRAMADOR:                                                                 ::
+  :: DATA       :                                           VERSÃO FXML:          ::
+  :: ALTERAÇÃO  :                                                                 ::
+  ::- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ::
+  :: PROGRAMADOR: Matheus Reynard                                                 ::
+  :: DATA       : 28/04/2022                                VERSÃO FXML:     2    ::
+  :: ALTERAÇÃO  : SQCWB-48873 - Adicionada mascara no campo Instituição.          ::
+  ::- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ::
+  :: PROGRAMADOR: Matheus Reynard                                                 ::
+  :: DATA       : 22/03/2022                                VERSÃO FXML:     1    ::
+  :: ALTERAÇÃO  : SD-80679 Tela de fechamento custódia e WF                       ::
+  ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+-->
+
+<?import java.lang.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import x00sp03.x00c.*?>
+<?import x00sp03.x00c.TTIButton?>
+<?import x00sp03.x00c.TTICheckBox?>
+<?import x00sp03.x00c.TTIDataGrid?>
+<?import x00sp03.x00c.TTIEdit?>
+<?import x00sp03.x00c.TTIGridPane?>
+<?import x00sp03.x00c.TTILabel?>
+<?import x00sp03.x00c.TTIAnchorPane?>
+<?import x00sp03.x00c.TTITelaCRUD?>
+<?import x00sp03.x00c.TTIVBox?>
+
+<TTIAnchorPane 
+  fx:id="apFechamento" 
+  prefWidth="744"
+  prefHeight="375" 
+  fx:controller="x04sp01.view.X04SF0119C"
+  xmlns:fx="http://javafx.com/fxml">
+  <TTIVBox AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+    <TTIVBox VBox.vgrow="ALWAYS">
+    
+      <TTIHBox HBox.hgrow="ALWAYS">
+        <TTILabelLocalizar 
+          fx:id="lblInstituicao"
+          GridPane.columnIndex="1"
+          GridPane.rowIndex="1"
+          lblWidth="70"
+          codWidth="100"  
+          prefWidth="376"             
+          prefHeight="13"
+          requerido="true"
+          tipoMascara="DIG_VERIF1"
+          label="Instituição:"
+          noFocusOnRegistroNovo="true"
+          limparAoNaoEncontrar="false"
+          somenteExistente="false"
+          utilizaConsultaDinamica="true"
+          aliasCod="IN05_NR_INST"
+          aliasDesc="IN05_NM_REINST"
+          descricaoEditable="false"
+          descricaoEnable="false" 
+          semEntidade="true"
+          onAfterLocalizar="#carregarDataGrid"
+          codigoEnable="false">                
+          <TTIColuna text="Cód. Instituição"      dataField="IN05_NR_INST"   mascaraZerosEsquerda="true" larguraPercentual="50" tipoMascara="DIG_VERIF" />
+          <TTIColuna text="Nome"                  dataField="IN05_NM_REINST" mascaraZerosEsquerda="true" larguraPercentual="50" />               
+        </TTILabelLocalizar> 
+      </TTIHBox>
+      
+      <TTIHBox HBox.hgrow="ALWAYS">
+        <TTICheckBox text="Selecionar todos" fx:id="ckbxSelecionarTodos" onAction="#selecionarTodos" selected="true" />
+      </TTIHBox>  
+      <TTIVBox HBox.hgrow="ALWAYS">
+        <TTIDataGrid fx:id="dtgAgencias"  campo="dtgAgencias" VBox.vgrow="ALWAYS" fieldIndicaSelecionado="Selecionado" insereColunaCheckBox="true">
+          <TTIColuna text="Instituição"   dataField="IN05_NR_INST"      larguraPercentual="20"    textAlign="CENTER_LEFT" tipoMascara="DIG_VERIF"/>
+          <TTIColuna text="Nome"          dataField="IN05_NM_REINST"    larguraPercentual="20"    textAlign="CENTER_LEFT" />
+          <TTIColuna text="Agência"       dataField="IN06_NR_AGEN"      larguraPercentual="20"    textAlign="CENTER_LEFT" tipoMascara="DIG_VERIF"/>
+          <TTIColuna text="Nome"          dataField="IN06_NM_REINST"    larguraPercentual="20"    textAlign="CENTER_LEFT" />
+          <TTIColuna text="Dt. atual"     dataField="EM700_DT_ATU"      larguraPercentual="20"    textAlign="CENTER_LEFT" tipoMascara="DATA"/>
+        </TTIDataGrid>
+      </TTIVBox>
+      
+      <TTITitledPane fx:id="ttWorkflow" text="WorkFlow" collapsible="false" HBox.hgrow="ALWAYS">
+        <TTIVBox HBox.hgrow="ALWAYS">
+          <TTIHBox HBox.hgrow="ALWAYS" alignment="CENTER_LEFT">
+            <TTICheckBox fx:id="ckbxWorkflow" text="Cobrança" alignment="CENTER_LEFT" selected="true"/>
+          </TTIHBox>
+        </TTIVBox>
+      </TTITitledPane>
+      
+      <TTITitledPane fx:id="ttCustodia" text="Custódia" collapsible="false" HBox.hgrow="ALWAYS">
+        <TTIVBox HBox.hgrow="ALWAYS">
+          <TTIHBox HBox.hgrow="ALWAYS" alignment="CENTER_LEFT">
+            <TTICheckBox fx:id="ckbxCustodia" text="Gerar tarifa de custódia" alignment="CENTER_LEFT" selected="true"/>
+          </TTIHBox>
+        </TTIVBox>
+      </TTITitledPane>
+      
+      <TTIHBox HBox.hgrow="ALWAYS" alignment="BASELINE_RIGHT" prefHeight="30">
+        <TTIButton fx:id="btnAtualizar"    minWidth="100" maxWidth="100" prefHeight="25" text="Atualizar" onAction="#atualizar"/>
+      </TTIHBox>
+      
+    </TTIVBox>
+  </TTIVBox>
+</TTIAnchorPane>

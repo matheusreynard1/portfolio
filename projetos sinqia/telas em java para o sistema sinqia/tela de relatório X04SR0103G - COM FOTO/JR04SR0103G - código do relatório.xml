@@ -1,0 +1,62 @@
+<!--
+  :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+  :: EMPRESA    : Sinqia                                                       ::
+  :: SISTEMA    : SQ Crédito                                                   ::
+  :: MÓDULO     : Spread da Operação                                           ::
+  :: OBSERVAÇÃO : Relatório Analítico                                          ::
+  ::- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -::
+  :: PROGRAMADOR:                                                              ::
+  :: DATA       :                                            VERSÃO XML:       ::
+  :: ALTERAÇÃO  :                                                              ::
+  ::- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -::
+  :: PROGRAMADOR: Matheus Reynayrd                                             ::
+  :: DATA       : 31/03/2022                                 VERSÃO XML:     1 ::
+  :: ALTERAÇÃO  : Primeira Versão                                              ::
+  ::              SQCWB-46276 - Migração Relatórios - Cancelamentos            ::
+  :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+ -->
+ 
+ 
+<JRXML Vrs="1"> 
+  <Param   
+    RelNome="JR04SR0103G"
+    RelTitulo="Contratos cancelados"
+    SubTituloUm="" 
+    ConsultaBD="S"
+    SubTituloDois=""
+    Orientation="Landscape"
+    ComLogo="N"
+    SistemaSaas="N"
+    ImgCustom=""
+    filtroNome="X04SR0103G"
+    fonteTipo=""
+    telaFiltroDinamica="N" 
+    ParamEntSpTipoRelatorio="01"   
+  />
+  <Group IdGroup="1" Field="EM01_CD_CONVEN" IncNewPag="N" ReprintHeaderOnEachPage="S"> 
+    <GFooter Bold="S" Exibir="S" Summary="S" SumTit="Total geral:" SumTitWidth="100" SeparatorLine="N">
+      <GFField Label="Total do convênio: " Width="65" Align="Right"/>
+      <GFField Field="EM32_NM_CONV"     Width="120"/>
+      <GFField IdColumn="70"   Calculation="Count"  />
+      <GFField IdColumn="80"   Calculation="Sum"  />
+      <GFField IdColumn="90"   Calculation="Sum"  />
+      <GFField IdColumn="100"  Calculation="Sum"  />
+      <GFField IdColumn="110"  Calculation="Sum"  />
+      <GFField IdColumn="120"  Calculation="Sum"  />
+      <GFField IdColumn="130"  Calculation="Sum"  />
+    </GFooter>                                                           
+  </Group>  
+  <C Id="10"  Desc="Convênio"            Field="EM01_CD_CONVEN" TipoCampo="N" Exibir="S" Width="45"  PrintRepeatedValue="N" Align="Right" Mask="DIGVERIF"/>
+  <C Id="20"  Desc=""                    Field="EM32_NM_CONV"   TipoCampo="T" Exibir="S" Width="80"  PrintRepeatedValue="N" Align="Right" Ordenacao="A"/>
+  <C Id="30"  Desc="Produto"             Field="EM01_CD_PRODUT" TipoCampo="N" Exibir="S" Width="35"  PrintRepeatedValue="N" Align="Right" Mask="DIGVERIF"/>
+  <C Id="40"  Desc=""                    Field="EM02_DS_PRODUC" TipoCampo="T" Exibir="S" Width="100"  PrintRepeatedValue="N" Align="Right"/>
+  <C Id="50"  Desc="Agência"             Field="EM01_NR_AGEN"   TipoCampo="N" Exibir="S" Width="30"  Align="Right" />
+  <C Id="60"  Desc=""                    Field="IN06_NM_COINST" TipoCampo="T" Exibir="S" Width="80"  PrintRepeatedValue="N" Align="Right" Ordenacao="A"/>
+  <C Id="70"  Desc="Qtde."               Field="EM01_QT_CONTRA" TipoCampo="N" Exibir="S" Width="70"  Align="Right" PrintRepeatedValue="S" />
+  <C Id="80"  Desc="Vlr. líquido"        Field="EM01_VL_LIQUID" TipoCampo="N" Exibir="S" Width="70"  Align="Right" PrintRepeatedValue="S" Mask="VALOR"/>
+  <C Id="90"  Desc="Vlr. IOF"            Field="EM01_VL_IOFCOB" TipoCampo="N" Exibir="S" Width="45"  Align="Right" PrintRepeatedValue="S" Mask="VALOR"/>
+  <C Id="100" Desc="Vlr. TAC"            Field="EM01_VL_CONCES" TipoCampo="N" Exibir="S" Width="45"  Align="Right" PrintRepeatedValue="S" Mask="VALOR"/>
+  <C Id="110" Desc="Vlr. financiado"     Field="EM01_VL_CONTRA" TipoCampo="N" Exibir="S" Width="45"  Align="Right" PrintRepeatedValue="S" Mask="VALOR"/>
+  <C Id="120" Desc="Saldo devedor"       Field="EM01_VL_SDODEV" TipoCampo="N" Exibir="S" Width="45"  Align="Right" PrintRepeatedValue="S" Mask="VALOR"/>
+  <C Id="130" Desc="Vlr. retido"         Field="EM01_VL_RETIDO" TipoCampo="N" Exibir="S" Width="45"  Align="Right" PrintRepeatedValue="S" Mask="VALOR"/>
+</JRXML>
