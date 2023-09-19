@@ -1,0 +1,221 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+    <title>Cartórios CRUD</title>
+    
+     <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">  
+</head>
+
+<body>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+<script>
+// GET CARTÓRIO POR ID //////////////////////////////////////////
+function pesquisarCartorioPorId() {
+
+// Pega o ID	
+const id = document.getElementById("id").value;
+
+if (id=='0' || id=="") {
+	alert("Informe um ID válido.");
+}
+
+// URL da API Spring Boot que você deseja consumir
+const url = "http://localhost:6363/cartorio/" + id
+// Selecione o elemento HTML onde você deseja exibir os resultados
+const resultadoGet = document.getElementById('resultado');
+
+// Faça a solicitação GET usando fetch()
+fetch(url)
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Erro ao consumir a API');
+        }
+        response.json().then(data => {
+			
+		const ul = document.createElement('ul');
+		
+        // Manipule os dados da API aqui
+        const li = document.createElement('li');
+        li.textContent = `ID: ${data.cartorioId}, Nome: ${data.nome}`;
+        ul.appendChild(li);
+
+        // Atualizar o conteúdo da página com a lista
+        resultadoGet.appendChild(ul);
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+    });
+  })
+};
+//////////////////////////////////////////////////////////////////
+
+// GET TODOS OS CARTÓRIOS //////////////////////////////////////////
+function pesquisarCartorios() {
+	
+// URL da API Spring Boot que você deseja consumir
+const url = "http://localhost:6363/cartorio";
+
+const tbody = gridResultado.querySelector('tbody');
+
+const gridHidden = document.getElementById('gridResultado');
+gridHidden.hidden= false;
+
+// Faça a solicitação GET usando fetch()
+fetch(url)
+	.then(response => {
+        if (!response.ok) {
+            throw new Error('Erro ao consumir a API');
+        }
+        response.json().then(data => {
+			
+		tbody.innerHTML = '';
+		
+        // Manipule os dados da API aqui
+        data.forEach(item => {
+	        const row = document.createElement('tr');
+	        row.innerHTML = `
+	            <td>${item.cartorioId}</td>
+	            <td>${item.nome}</td>
+	            <td>${item.observacao}</td>
+	            <td>${item.situacaoCartorioId}</td>
+	            <td>${item.lista_atribuicoes}</td>
+	        `;
+	        tbody.appendChild(row);
+        });
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+    });
+  })
+};
+//////////////////////////////////////////////////////////////////
+
+function mostrarCampos(formulario) {
+	
+	if (formulario=='cadastrar') {
+		const campo = document.getElementById('id');
+		campo.disabled = false;
+		const campo2 = document.getElementById('nome');
+		campo2.disabled = false;
+		const campo3 = document.getElementById('observacao');
+		campo3.disabled = false;
+		const campo4 = document.getElementById('situacaoCartorio');
+		campo4.disabled = false;
+		const campo5 = document.getElementById('listaAtribuicoes');
+		campo5.disabled = false;
+		
+		const botao = document.getElementById('cadastrarBtn');
+		botao.hidden = false;
+		const botao2 = document.getElementById('pesquisarTodosBtn');
+		botao2.hidden = true;
+		const botao3 = document.getElementById('pesquisarIdBtn');
+		botao3.hidden = true;
+	}
+	
+	if (formulario=='pesquisarTodos') {
+		const campo = document.getElementById('id');
+		campo.disabled = true;
+		const campo2 = document.getElementById('nome');
+		campo2.disabled = true;
+		const campo3 = document.getElementById('observacao');
+		campo3.disabled = true;
+		const campo4 = document.getElementById('situacaoCartorio');
+		campo4.disabled = true;
+		const campo5 = document.getElementById('listaAtribuicoes');
+		campo5.disabled = true;
+		
+		const botao = document.getElementById('cadastrarBtn');
+		botao.hidden = true;
+		const botao2 = document.getElementById('pesquisarTodosBtn');
+		botao2.hidden = false;
+		const botao3 = document.getElementById('pesquisarIdBtn');
+		botao3.hidden = true;
+	}
+	
+	if (formulario=='pesquisarPorId') {
+		const campo = document.getElementById('id');
+		campo.disabled = false;
+		const campo2 = document.getElementById('nome');
+		campo2.disabled = true;
+		const campo3 = document.getElementById('observacao');
+		campo3.disabled = true;
+		const campo4 = document.getElementById('situacaoCartorio');
+		campo4.disabled = true;
+		const campo5 = document.getElementById('listaAtribuicoes');
+		campo5.disabled = true;
+		
+		const botao = document.getElementById('cadastrarBtn');
+		botao.hidden = true;
+		const botao2 = document.getElementById('pesquisarTodosBtn');
+		botao2.hidden = true;
+		const botao3 = document.getElementById('pesquisarIdBtn');
+		botao3.hidden = false;
+	}
+}
+
+</script>
+
+<h3>Projeto Rest API Spring Boot - Cartórios CRUD</h3>
+
+<input type="radio" name="opcao" id="opcaoCadastrar" value="opcao1" onchange="mostrarCampos('cadastrar')"/>
+<label for="opcaoCadastrar" class="form-label">Cadastrar cartório</label>
+<input type="radio" name="opcao" id="opcaoPesquisarTodos" value="opcao2" onchange="mostrarCampos('pesquisarTodos')" />
+<label for="opcaoPesquisarTodos" class="form-label">Pesquisar todos os cartórios</label>
+<input type="radio" name="opcao" id="opcaoPorId" value="opcao3" onchange="mostrarCampos('pesquisarPorId')" />
+<label for="opcaoPorId" class="form-label">Pesquisar cartório por ID</label>
+
+<form action="" id="formCadastroCartorio"    >
+<div class="mb-3">
+  <label for="id" class="form-label">ID:</label>
+  <input type="text" class="form-control" id="id">
+</div>
+
+<div class="mb-3">
+  <label for="nome" class="form-label">Nome:</label>
+  <input type="text" class="form-control" id="nome" placeholder="Informe o nome" required="required">
+</div>
+
+<div class="mb-3">
+  <label for="observacao" class="form-label">Observação:</label>
+  <input type="text" class="form-control" id="observacao" placeholder="Informe uma observação">
+</div>
+
+<div class="mb-3">
+  <label for="situacaoCartorio" class="form-label">Situação cartório:</label>
+  <input type="text" class="form-control" id="situacaoCartorio" placeholder="Informe uma situação">
+</div>
+
+<div class="mb-3">
+  <label for="listaAtribuicoes" class="form-label">Lista de atribuições:</label>
+  <input type="text" class="form-control" id="listaAtribuicoes" placeholder="Informe uma ou mais atribuições">
+</div>
+</form>
+<br>
+<button type="button" id="cadastrarBtn" onclick="cadastrarCartorio()" class="btn btn-primary">Cadastrar</button>
+<button type="button" id="pesquisarTodosBtn" onclick="pesquisarCartorios()" class="btn btn-primary" hidden="true">Pesquisar todos</button>
+<button type="button" id="pesquisarIdBtn" onclick="pesquisarCartorioPorId()" class="btn btn-primary" hidden="true">Pesquisar por ID</button>
+<br><br>
+<table id="gridResultado" hidden="true">
+	<thead>
+		<tr>
+			<th>Resultado</th>
+		</tr>
+		<tr>
+			<th>ID</th>
+			<th>Nome</th>
+			<th>Observação</th>
+			<th>Situação cartório</th>
+			<th>Lista de atribuições</th>
+	    </tr>
+    </thead>
+    <tbody>
+    
+	</tbody>
+</table>
+    
+</body>
+</html>
