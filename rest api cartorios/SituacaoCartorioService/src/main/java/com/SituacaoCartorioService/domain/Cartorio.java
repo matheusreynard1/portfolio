@@ -32,7 +32,7 @@ public class Cartorio implements Serializable {
 	@JsonProperty
 	String observacao;
 	
-	@Column(name="situacao_cartorio")
+	@Column(name="situacao_cartorio_id")
 	@Transient
 	@JsonProperty
 	int situacao_cartorio;

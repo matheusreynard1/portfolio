@@ -1,16 +1,17 @@
 package com.SituacaoCartorioService.repository;
 
-import org.springframework.data.repository.CrudRepository;
+import java.util.List;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import com.SituacaoCartorioService.domain.SituacaoCartorio;
 
-public interface SituacaoCartorioRepository extends CrudRepository<SituacaoCartorio, Integer> {
+public interface SituacaoCartorioRepository extends JpaRepository<SituacaoCartorio, Integer> {
 	
 	SituacaoCartorio findAllBySituacaoCartorioId(int id);
-	Iterable<SituacaoCartorio> findAll();
+	List<SituacaoCartorio> findAll();
 	@SuppressWarnings("unchecked")
 	SituacaoCartorio save(SituacaoCartorio novaSituacaoCartorio);
 	String deleteById(int id);
 	SituacaoCartorio save(int id);
-
+	
 }

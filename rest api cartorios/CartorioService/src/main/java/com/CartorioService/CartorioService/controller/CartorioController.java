@@ -29,7 +29,7 @@ public class CartorioController {
 		Cartorio cart = findAllByCartorioId(cartorioId);
 		cart.setNome(cartorioAlterado.getNome());
 		cart.setObservacao(cartorioAlterado.getObservacao());
-		cart.setSituacaoCartorioId(cartorioAlterado.getSituacaoCartorioId());
+		cart.setNomeEnum(cartorioAlterado.getNomeEnum());
 		cart.setLista_atribuicoes(cartorioAlterado.getLista_atribuicoes());
 		cartorioRepository.save(cart);
 		return cart;
@@ -49,6 +49,23 @@ public class CartorioController {
 	public String deleteById(@PathVariable("cartorioId") int id) {
 		cartorioRepository.deleteById(id);
 	   return "Registro " + id + " excluído com sucesso.";
+	}
+	
+	@SuppressWarnings("unchecked")
+	@GetMapping(value = "/cartorio/getSituacaoComCartorio/{idSituacao}")
+	public Cartorio findSituacoesComCartorioCadastrado(@PathVariable int idSituacao) {
+		Integer idCartorio = cartorioRepository.findSituacoesComCartorioCadastrado(idSituacao);
+		if (idCartorio == null || idCartorio.equals("")) {
+			idCartorio = 0;
+		}
+		System.out.println(idCartorio);
+		Cartorio cart = cartorioRepository.findAllByCartorioId(idCartorio);
+		if (cart == null) {
+			cart = new Cartorio();
+		}
+		System.out.println(cart);
+		return cart;
+		
 	}
 
 }

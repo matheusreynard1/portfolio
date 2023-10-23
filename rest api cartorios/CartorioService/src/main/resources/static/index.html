@@ -8,7 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">  
 </head>
 
-<body>
+<body onload="carregarPaginaInicial()">
 
 <style>
 
@@ -47,10 +47,27 @@
 
 form {
   width: 500px; /* Defina a largura do formulário conforme necessário */
+  height: 450px;
 }
 
 button {
 	width: 300px;
+}
+
+
+.imagemFundo::before {
+	  content: "";
+	  position: absolute;
+	  top: 0;
+	  left: 0;
+	  width: 100%;
+	  height: 75%;
+	  background-image: url('images/background.jpg');
+	  background-size: cover;
+	  background-repeat: no-repeat;
+	  background-attachment: fixed;
+	  opacity: 0.5; /* Ajuste a opacidade da imagem de fundo conforme necessário */
+	  z-index: -1; /* Coloca o pseudo-elemento atrás do conteúdo da div */
 }
 </style>
 
@@ -58,6 +75,17 @@ button {
 
 <script>
 
+function carregarPaginaInicial() {
+
+	document.getElementById('id').value = ""
+	document.getElementById('nome').value = ""
+	document.getElementById('observacao').value = ""
+	document.getElementById('situacao').value = ""
+	document.getElementById('listaAtribuicoes').value = ""
+	
+}
+
+//EXCLUIR CADASTRO //////////////////////////////////////////
 function excluirCadastro(idExcluir) {
 	
 	let id = 0
@@ -81,6 +109,7 @@ function excluirCadastro(idExcluir) {
 	    return response.json(); // Se você espera uma resposta JSON, caso contrário, use response.text()
 	  })
 }
+//////////////////////////////////////////////////////////////////
 
 // SALVAR EDIÇÃO //////////////////////////////////////////
 function salvarEdicao() {
@@ -89,7 +118,7 @@ if (document.getElementById('nome').value == "" || document.getElementById('nome
 	alert('Nome obrigatório.');
 } else if (document.getElementById('observacao').value == "" || document.getElementById('observacao').value == null) {
 	alert('Observação obrigatória.');
-} else if (document.getElementById('situacaoCartorio').value == "" || document.getElementById('situacaoCartorio').value == null) {
+} else if (document.getElementById('situacao').value == "" || document.getElementById('situacao').value == null) {
 	alert('Situação cartório obrigatória..');
 } else if (document.getElementById('listaAtribuicoes').value == "" || document.getElementById('listaAtribuicoes').value == null) {
 	alert('Lista de atribuições obrigatória.');
@@ -102,7 +131,7 @@ if (document.getElementById('nome').value == "" || document.getElementById('nome
 	const dadosEdicao = {
 	  nome: document.getElementById('nome').value,
 	  observacao: document.getElementById('observacao').value,
-	  situacaoCartorioId: document.getElementById('situacaoCartorio').value,
+	  situacao_cartorio: document.getElementById('situacao').value,
 	  lista_atribuicoes: document.getElementById('listaAtribuicoes').value
 	};
 	
@@ -124,8 +153,8 @@ if (document.getElementById('nome').value == "" || document.getElementById('nome
 	  .then((response) => {
 	    if (response.ok) {
 	      // A atualização foi bem-sucedida
-	      alert('Dados atualizados com sucesso.');  
-	      tbody.innerHTML = '';  
+	      alert('Dados atualizados com sucesso.'); 
+	      pesquisarCartorios(); 
 	    } else {
 	      // A atualização falhou
 	      alert('Erro ao atualizar os dados.');
@@ -138,7 +167,7 @@ if (document.getElementById('nome').value == "" || document.getElementById('nome
 }
 //////////////////////////////////////////////////////////////////
 
-// EDITAR cADASTRO //////////////////////////////////////////
+// EDITAR CADASTRO //////////////////////////////////////////
 function editarCadastro(idEditar) {	
 	
 mostrarCampos('editarCadastro');
@@ -161,13 +190,13 @@ fetch(url)
 		var textBoxId = document.getElementById('id');
 		var textBoxNome = document.getElementById('nome');
 		var textBoxObservacao = document.getElementById('observacao');
-		var textBoxSituacaoCartorio = document.getElementById('situacaoCartorio');
+		var comboBoxSituacaoCartorio = document.getElementById('situacao');
 		var textBoxListaAtribuicoes = document.getElementById('listaAtribuicoes');
 	
 		textBoxId.value = data.cartorioId;
 		textBoxNome.value = data.nome;
 		textBoxObservacao.value = data.observacao;
-		textBoxSituacaoCartorio.value = data.situacaoCartorioId;
+		comboBoxSituacaoCartorio.value = data.situacao_cartorio;
 		textBoxListaAtribuicoes.value = data.lista_atribuicoes;
 	    });
 	 })
@@ -184,17 +213,13 @@ if (document.getElementById('nome').value == "" || document.getElementById('nome
 	alert('Nome obrigatório.');
 } else if (document.getElementById('observacao').value == "" || document.getElementById('observacao').value == null) {
 	alert('Observação obrigatória.');
-} else if (document.getElementById('situacaoCartorio').value == "" || document.getElementById('situacaoCartorio').value == null) {
-	alert('Situação cartório obrigatória..');
-} else if (document.getElementById('listaAtribuicoes').value == "" || document.getElementById('listaAtribuicoes').value == null) {
-	alert('Lista de atribuições obrigatória.');
 } else {
 	
 	// Dados que você deseja enviar no novo cadastro
 	const novoCadastro = {
 	  nome: document.getElementById('nome').value,
 	  observacao: document.getElementById('observacao').value,
-	  situacaoCartorioId: document.getElementById('situacaoCartorio').value,
+	  situacao_cartorio: document.getElementById('situacao').value,
 	  lista_atribuicoes: document.getElementById('listaAtribuicoes').value
 	};
 	
@@ -267,10 +292,10 @@ fetch(url)
             <td>${data.cartorioId}</td>
             <td>${data.nome}</td>
             <td>${data.observacao}</td>
-            <td>${data.situacaoCartorioId}</td>
+            <td>${data.situacao_cartorio}</td>
             <td>${data.lista_atribuicoes}</td>
-            <td><button type="button"  id="editarBtn"  onclick=editarCadastro(${data.cartorioId}) class="btn btn-primary">Editar</button></td>
-            <td><button type="button"  id="excluirBtn" onclick="excluirCadastro(${data.cartorioId})" class="btn btn-primary">Excluir</button></td>
+            <td><button type="button"  id="editarBtn"  onclick="editarCadastro(${data.cartorioId})" class="btn btn-secondary">Editar</button></td>
+            <td><button type="button"  id="excluirBtn" onclick="excluirCadastro(${data.cartorioId})" class="btn btn-secondary">Excluir</button></td>
         `;
 	    tbody.appendChild(row);
 	    idEditar = document.getElementById('id');
@@ -285,44 +310,54 @@ fetch(url)
 // GET TODOS OS CARTÓRIOS ////////////////////////////////////////
 function pesquisarCartorios() {
 	
-// URL da API Spring Boot que você deseja consumir
-const url = "http://localhost:6363/cartorio";
+	// URL da API Spring Boot que você deseja consumir
+	const url = "http://localhost:6363/cartorio";
 
-const tbody = gridResultado.querySelector('tbody');
+	const tbody = gridResultado.querySelector('tbody');
 
-const gridHidden = document.getElementById('gridResultado');
-gridHidden.hidden= false;
+	const gridHidden = document.getElementById('gridResultado');
+	gridHidden.hidden= false;
 
-// Faça a solicitação GET usando fetch()
-fetch(url)
-	.then(response => {
-        if (!response.ok) {
-            throw new Error('Erro ao consumir a API');
-        }
-        response.json().then(data => {
+	// Faça a solicitação GET usando fetch()
+	fetch(url)
+		.then(response => {
+	        if (!response.ok) {
+	            throw new Error('Erro ao consumir a API');
+	        }
+	        response.json().then(data => {
+				
+			tbody.innerHTML = '';
 			
-		tbody.innerHTML = '';
-		
-        // Manipule os dados da API aqui
-        data.forEach(item => {
-	        const row = document.createElement('tr');
-	        row.innerHTML = `
-	            <td>${item.cartorioId}</td>
-	            <td>${item.nome}</td>
-	            <td>${item.observacao}</td>
-	            <td>${item.situacaoCartorioId}</td>
-	            <td>${item.lista_atribuicoes}</td>
-	            <td><button type="button"  id="editarBtn"  onclick=editarCadastro(${item.cartorioId}) class="btn btn-primary">Editar</button></td>
-	            <td><button type="button"  id="excluirBtn" onclick="excluirCadastro(${item.cartorioId})" class="btn btn-primary">Excluir</button></td>
-	        `;
-	        tbody.appendChild(row);
-        });
-    })
-    .catch(error => {
-        console.error('Erro:', error);
-    });
-  })
-};
+			let situacao;
+					
+	        // Manipule os dados da API aqui
+	        data.forEach(item => {
+	        	
+		        if (item.situacao_cartorio == 'SIT_ATIVO') {
+					situacao = "Ativo";
+				} else if (item.situacao_cartorio == 'SIT_BLOQUEADO') {
+					situacao = "Bloqueado";
+				}
+		        
+		        const row = document.createElement('tr');
+		        
+		        row.innerHTML = `
+		            <td>${item.cartorioId}</td>
+		            <td>${item.nome}</td>
+		            <td>${item.observacao}</td>
+		            <td>${situacao}</td>
+		            <td>${item.lista_atribuicoes}</td>
+		            <td><button type="button"  id="editarBtn"  onclick=editarCadastro(${item.cartorioId}) class="btn btn-secondary">Editar</button></td>
+		            <td><button type="button"  id="excluirBtn" onclick="excluirCadastro(${item.cartorioId})" class="btn btn-secondary">Excluir</button></td>
+		        `;
+		        tbody.appendChild(row);
+	        });
+	    })
+	    .catch(error => {
+	        console.error('Erro:', error);
+	    });
+	  })
+	};
 //////////////////////////////////////////////////////////////////
 
 function mostrarCampos(formulario) {
@@ -334,7 +369,7 @@ function mostrarCampos(formulario) {
 		campo2.disabled = false;
 		const campo3 = document.getElementById('observacao');
 		campo3.disabled = false;
-		const campo4 = document.getElementById('situacaoCartorio'); 
+		const campo4 = document.getElementById('situacao'); 
 		campo4.disabled = false;
 		const campo5 = document.getElementById('listaAtribuicoes');
 		campo5.disabled = false;
@@ -356,7 +391,7 @@ function mostrarCampos(formulario) {
 		campo2.disabled = true;
 		const campo3 = document.getElementById('observacao');
 		campo3.disabled = true;
-		const campo4 = document.getElementById('situacaoCartorio');
+		const campo4 = document.getElementById('situacao');
 		campo4.disabled = true;
 		const campo5 = document.getElementById('listaAtribuicoes');
 		campo5.disabled = true;
@@ -378,7 +413,7 @@ function mostrarCampos(formulario) {
 		campo2.disabled = true;
 		const campo3 = document.getElementById('observacao');
 		campo3.disabled = true;
-		const campo4 = document.getElementById('situacaoCartorio');
+		const campo4 = document.getElementById('situacao');
 		campo4.disabled = true;
 		const campo5 = document.getElementById('listaAtribuicoes');
 		campo5.disabled = true;
@@ -400,7 +435,7 @@ function mostrarCampos(formulario) {
 		campo2.disabled = false;
 		const campo3 = document.getElementById('observacao');
 		campo3.disabled = false;
-		const campo4 = document.getElementById('situacaoCartorio');
+		const campo4 = document.getElementById('situacao');
 		campo4.disabled = false;
 		const campo5 = document.getElementById('listaAtribuicoes');
 		campo5.disabled = false;
@@ -418,11 +453,23 @@ function mostrarCampos(formulario) {
 
 </script>
 
-<div class="w-100 p-3" style="background-color: lightsteelblue">
-	<h3>Projeto Rest API Spring Boot - Cartórios CRUD</h3>
-</div>
-
-<div class="w-100 p-3" style="background-color: aliceblue">
+<body>
+	<div class="collapse" id="navbarToggleExternalContent" data-bs-theme="dark">
+	  <div class="bg-dark p-4">
+	  <a class="btn btn-secondary" href="index.html" role="button">Cartórios</a>
+	  <a class="btn btn-secondary" href="http://localhost:6161/situacoes.html" role="button">Situações do cartório</a>
+	  <a class="btn btn-secondary" href="atribuicoes.html" role="button">Lista de atribuições</a>
+	  </div>
+	</div>
+	<nav class="navbar navbar-dark bg-dark">
+	  <div class="container-fluid">
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+	  <span class="navbar-toggler-icon"></span>
+	    </button>
+	  </div>
+	</nav>
+	
+	<div class="w-100 p-3" style="background-color: silver">
 	<label class="form-label">Selecione uma opção:</label><br>
 	<input type="radio" name="opcao" id="opcaoCadastrar" value="cadastrar" onchange="mostrarCampos('cadastrar')"/>
 	<label for="opcaoCadastrar" >Cadastrar cartório</label><br>
@@ -430,67 +477,72 @@ function mostrarCampos(formulario) {
 	<label for="opcaoPesquisarTodos" >Pesquisar todos os cartórios</label><br>
 	<input type="radio" name="opcao" id="opcaoPorId" value="buscarUm" onchange="mostrarCampos('pesquisarPorId')" />
 	<label for="opcaoPorId" >Pesquisar cartório por ID</label>
-</div>
-
-<div class="w-100 p-3" >
-	<form action="" id="formCadastroCartorio">
-		<div class="mb-3">
-		  <label for="id" class="form-label">ID:</label>
-		  <input type="text" class="form-control" id="id">
-		</div>
+	</div>
+		<div class="imagemFundo">
+			<div class="formulario">
+				<div class="w-100 p-3">
+					<form action="" id="formCadastroCartorio">
+						<div class="mb-3">
+						  <label for="id" class="form-label">ID:</label>
+						  <input type="text" class="form-control" id="id">
+						</div>
+						
+						<div class="mb-3">
+						  <label for="nome" class="form-label">Nome:</label>
+						  <input type="text" class="form-control" id="nome" placeholder="Informe o nome" required="required">
+						</div>
+						
+						<div class="mb-3">
+						  <label for="observacao" class="form-label">Observação:</label>
+						  <input type="text" class="form-control" id="observacao" placeholder="Informe uma observação">
+						</div>
+						
+						<div class="mb-3">
+						  <label for="situacao" class="form-label">Situação cartório:</label><br>
+						  <select id="situacao" name="situacoes" length="100" style="width: 300px;">
+				    	  	<option id="sit_ativo"     value="SIT_ATIVO">Ativo</option>
+				          	<option id="sit_bloqueado" value="SIT_BLOQUEADO">Bloqueado</option>
+				          </select
+						</div>
+						
+						<div class="mb-3">
+						  <label for="listaAtribuicoes" class="form-label">Lista de atribuições:</label>
+						  <input type="text" class="form-control" id="listaAtribuicoes" placeholder="Informe uma ou mais atribuições">
+						</div>
+					</form>
+				</div>
+			</div>
 		
-		<div class="mb-3">
-		  <label for="nome" class="form-label">Nome:</label>
-		  <input type="text" class="form-control" id="nome" placeholder="Informe o nome" required="required">
-		</div>
-		
-		<div class="mb-3">
-		  <label for="observacao" class="form-label">Observação:</label>
-		  <input type="text" class="form-control" id="observacao" placeholder="Informe uma observação">
-		</div>
-		
-		<div class="mb-3">
-		  <label for="situacaoCartorio" class="form-label">Situação cartório:</label>
-		  <input type="text" class="form-control" id="situacaoCartorio" placeholder="Informe uma situação">
-		</div>
-		
-		<div class="mb-3">
-		  <label for="listaAtribuicoes" class="form-label">Lista de atribuições:</label>
-		  <input type="text" class="form-control" id="listaAtribuicoes" placeholder="Informe uma ou mais atribuições">
-		</div>
-	</form>
-</div>
-
-<div class="w-100 p-3" style="background-color: aliceblue">
-	<button type="button" id="cadastrarBtn" onclick="cadastrarCartorio()" class="btn btn-primary">Cadastrar</button>
-	<button type="button" id="pesquisarTodosBtn" onclick="pesquisarCartorios()" class="btn btn-primary" hidden="true">Pesquisar todos</button>
-	<button type="button" id="pesquisarIdBtn" onclick="pesquisarCartorioPorId()" class="btn btn-primary" hidden="true">Pesquisar por ID</button>
-	<button type="button" id="salvarEdicaoBtn" onclick="salvarEdicao()" class="btn btn-primary" hidden="true">Salvar</button>
-</div>
-
-<div class="w-100 p-3" style="background-color: aliceblue">
-<table id="gridResultado" hidden="true" class="tabela-padrao">
-	<thead>
-		<tr>
-			<th colspan=5>RESULTADO</th>
-			<th></th>
-			<th></th>
-		</tr>
-		<tr>
-			<th>ID</th>
-			<th>Nome</th>
-			<th>Observação</th>
-			<th>Situação cartório</th>
-			<th>Lista de atribuições</th>
-			<th></th>
-			<th></th>
-	    </tr>
-    </thead>
-    <tbody>
-    
-	</tbody>
-</table>
-</div>
-    
-</body>
+			<div class="w-100 p-3" style="background-color: silver">
+				<button type="button" id="cadastrarBtn" onclick="cadastrarCartorio()" class="btn btn-secondary">Cadastrar</button>
+				<button type="button" id="pesquisarTodosBtn" onclick="pesquisarCartorios()" class="btn btn-secondary" hidden="true">Pesquisar todos</button>
+				<button type="button" id="pesquisarIdBtn" onclick="pesquisarCartorioPorId()" class="btn btn-secondary" hidden="true">Pesquisar por ID</button>
+				<button type="button" id="salvarEdicaoBtn" onclick="salvarEdicao()" class="btn btn-secondary" hidden="true">Salvar</button>
+			</div>
+			
+			<div class="w-100 p-3" style="background-color: silver">
+				<table id="gridResultado" hidden="true" class="tabela-padrao">
+					<thead>
+						<tr>
+							<th colspan=5>RESULTADO</th>
+							<th></th>
+							<th></th>
+						</tr>
+						<tr>
+							<th>ID</th>
+							<th>Nome</th>
+							<th>Observação</th>
+							<th>Situação cartório</th>
+							<th>Lista de atribuições</th>
+							<th></th>
+							<th></th>
+					    </tr>
+				    </thead>
+				    <tbody>
+				    
+					</tbody>
+				</table>
+			</div>
+	    </div>
+	</body>
 </html>

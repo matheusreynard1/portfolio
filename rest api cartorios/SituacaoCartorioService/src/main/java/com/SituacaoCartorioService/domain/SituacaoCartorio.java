@@ -27,9 +27,21 @@ public class SituacaoCartorio implements Serializable {
 	int situacaoCartorioId;
 	
 	@JsonProperty
-	@Column(name="nome")
+	@Column(name="nome_enum")
 	@Enumerated(EnumType.STRING)
-	SituacaoCartorioEnum nome;
+	SituacaoCartorioEnum nomeEnum;
+	
+	@JsonProperty
+	@Column(name="nome")
+	String nome;	
+	
+	public String nome() {
+		return nomeEnum.getDescricao();
+	}
+
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
 	
 	public int getId() {
 		return situacaoCartorioId;
@@ -40,11 +52,11 @@ public class SituacaoCartorio implements Serializable {
 	}
 
 	public SituacaoCartorioEnum getNome() {
-		return nome;
+		return nomeEnum;
 	}
 
-	public void setNome(SituacaoCartorioEnum nome) {
-		this.nome = nome;
+	public void setNome(SituacaoCartorioEnum nomeEnum) {
+		this.nomeEnum = nomeEnum;
 	}
 
 	public static long getSerialversionuid() {

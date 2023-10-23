@@ -24,27 +24,39 @@ public class SituacaoCartorio implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name="id")
 	@JsonProperty
-	int situacao_cartorio_id;
+	int situacaoCartorioId;
+	
+	@JsonProperty
+	@Column(name="nome_enum")
+	@Enumerated(EnumType.STRING)
+	SituacaoCartorioEnum nomeEnum;
 	
 	@JsonProperty
 	@Column(name="nome")
-	@Enumerated(EnumType.STRING)
-	SituacaoCartorioEnum nome;
+	String nome;	
+	
+	public String nome() {
+		return nomeEnum.getDescricao();
+	}
+
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
 	
 	public int getId() {
-		return situacao_cartorio_id;
+		return situacaoCartorioId;
 	}
 
 	public void setId(int id) {
-		this.situacao_cartorio_id = id;
+		this.situacaoCartorioId = id;
 	}
 
-	public String getNome() {
-		return nome.getDescricao();
+	public SituacaoCartorioEnum getNome() {
+		return nomeEnum;
 	}
 
-	public void setNome(SituacaoCartorioEnum nome) {
-		this.nome = nome;
+	public void setNome(SituacaoCartorioEnum nomeEnum) {
+		this.nomeEnum = nomeEnum;
 	}
 
 	public static long getSerialversionuid() {

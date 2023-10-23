@@ -2,10 +2,13 @@ package com.CartorioService.CartorioService.domain;
 
 import java.io.Serializable;
 
+import com.CartorioService.CartorioService.SituacaoCartorioEnum;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -31,20 +34,21 @@ public class Cartorio implements Serializable {
 	@JsonProperty
 	String observacao;
 	
-	@Column(name="situacao_cartorio_id")
 	@JsonProperty
-	int situacaoCartorioId;
+	@Column(name="situacao_cartorio")
+	@Enumerated(EnumType.STRING)
+	SituacaoCartorioEnum situacao_cartorio;
 	
 	@Column(name="lista_atribuicoes")
 	@JsonProperty
 	int lista_atribuicoes;
-	
-	public int getSituacaoCartorioId() {
-		return situacaoCartorioId;
+
+	public SituacaoCartorioEnum getNomeEnum() {
+		return situacao_cartorio;
 	}
 
-	public void setSituacaoCartorioId(int situacaoCartorioId) {
-		this.situacaoCartorioId = situacaoCartorioId;
+	public void setNomeEnum(SituacaoCartorioEnum nomeEnum) {
+		this.situacao_cartorio = nomeEnum;
 	}
 
 	public int getCartorioId() {
