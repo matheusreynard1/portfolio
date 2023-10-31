@@ -17,11 +17,11 @@ public interface CartorioRepository extends JpaRepository<Cartorio, Integer> {
 	Cartorio save(Cartorio novoCartorio);
 	String deleteById(int id);
 	Cartorio save(int id);
-	@Query(value = "SELECT TOP 1 *\r\n"
+	@Query(value = "SELECT COALESCE(c1.id, '') AS id\r\n"
 			+ "FROM cadastro_cartorio c1\r\n"
 			+ "INNER JOIN situacao_cartorio c2 ON c1.situacao_cartorio = c2.nome\r\n"
 			+ "WHERE c2.nome = :nomeSituacao", nativeQuery = true)
-	Cartorio findCartorioComSituacaoCadastrada(@Param("nomeSituacao")String nome);
+	String findCartorioComSituacaoCadastrada(@Param("nomeSituacao")String nomeSituacao);
 	
 	
 }

@@ -52,11 +52,17 @@ public class CartorioController {
 	}
 	
 	@GetMapping(value = "/cartorio/verificarExistencia/{nome}")
-	public @ResponseBody Cartorio findCartorioComSituacaoCadastrada(@PathVariable("nome") String verificarNome) {
+	public @ResponseBody String findCartorioComSituacaoCadastrada(@PathVariable("nome") String verificarNome) {
+		String idCartorio;
+		System.out.println(verificarNome);
+		System.out.println(cartorioRepository.findCartorioComSituacaoCadastrada(verificarNome));
 		if (cartorioRepository.findCartorioComSituacaoCadastrada(verificarNome) == null) {
-			Cartorio situacao = new Cartorio();
-			return situacao;
+			idCartorio = "0";
+			System.out.println(idCartorio);
+			return idCartorio;
 		}
-	    return cartorioRepository.findCartorioComSituacaoCadastrada(verificarNome);
+		idCartorio = cartorioRepository.findCartorioComSituacaoCadastrada(verificarNome);
+		System.out.println(idCartorio);
+	    return idCartorio;
 	}
 }
