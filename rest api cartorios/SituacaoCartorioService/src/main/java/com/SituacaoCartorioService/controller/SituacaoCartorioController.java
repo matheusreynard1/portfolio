@@ -25,6 +25,7 @@ public class SituacaoCartorioController {
 	public SituacaoCartorio alterar(@RequestBody SituacaoCartorio situacaoAlterada, @PathVariable int situacaoCartorioId) {
 		SituacaoCartorio situ = findAllBySituacaoCartorioId(situacaoCartorioId);
 		situ.setNome(situacaoAlterada.getNome());
+		situ.setObservacao(situacaoAlterada.getObservacao());
 		situacaoCartorioRepository.save(situ);
 		return situ;
 	}
@@ -49,6 +50,15 @@ public class SituacaoCartorioController {
 	public String deleteById(@PathVariable("situacaoCartorioId") int id) {
 		situacaoCartorioRepository.deleteById(id);
 		return "Registro " + id + " excluído com sucesso.";
+	}
+	
+	@GetMapping(value = "/situacaoCartorio/verificarNome/{nome}")
+	public @ResponseBody SituacaoCartorio verificarNome(@PathVariable("nome") String verificarNome) {
+		if (situacaoCartorioRepository.verificarNome(verificarNome) == null) {
+			SituacaoCartorio situacao = new SituacaoCartorio();
+			return situacao;
+		}
+	    return situacaoCartorioRepository.verificarNome(verificarNome);
 	}
 
 }

@@ -17,7 +17,11 @@ public interface CartorioRepository extends JpaRepository<Cartorio, Integer> {
 	Cartorio save(Cartorio novoCartorio);
 	String deleteById(int id);
 	Cartorio save(int id);
-	@Query(value = "SELECT TOP 1 * FROM cadastro_cartorio c1 INNER JOIN situacao_cartorio c2 ON c1.situacao_cartorio = c2.nome_enum", nativeQuery = true)
-	Integer findSituacoesComCartorioCadastrado(@Param("idSituacao")int idSituacao);
+	@Query(value = "SELECT TOP 1 *\r\n"
+			+ "FROM cadastro_cartorio c1\r\n"
+			+ "INNER JOIN situacao_cartorio c2 ON c1.situacao_cartorio = c2.nome\r\n"
+			+ "WHERE c2.nome = :nomeSituacao", nativeQuery = true)
+	Cartorio findCartorioComSituacaoCadastrada(@Param("nomeSituacao")String nome);
+	
 	
 }

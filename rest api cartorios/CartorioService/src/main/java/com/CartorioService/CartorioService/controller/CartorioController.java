@@ -29,7 +29,7 @@ public class CartorioController {
 		Cartorio cart = findAllByCartorioId(cartorioId);
 		cart.setNome(cartorioAlterado.getNome());
 		cart.setObservacao(cartorioAlterado.getObservacao());
-		cart.setNomeEnum(cartorioAlterado.getNomeEnum());
+		cart.setSituacao_cartorio(cartorioAlterado.getSituacao_cartorio());
 		cart.setLista_atribuicoes(cartorioAlterado.getLista_atribuicoes());
 		cartorioRepository.save(cart);
 		return cart;
@@ -51,21 +51,12 @@ public class CartorioController {
 	   return "Registro " + id + " excluído com sucesso.";
 	}
 	
-	@SuppressWarnings("unchecked")
-	@GetMapping(value = "/cartorio/getSituacaoComCartorio/{idSituacao}")
-	public Cartorio findSituacoesComCartorioCadastrado(@PathVariable int idSituacao) {
-		Integer idCartorio = cartorioRepository.findSituacoesComCartorioCadastrado(idSituacao);
-		if (idCartorio == null || idCartorio.equals("")) {
-			idCartorio = 0;
+	@GetMapping(value = "/cartorio/verificarExistencia/{nome}")
+	public @ResponseBody Cartorio findCartorioComSituacaoCadastrada(@PathVariable("nome") String verificarNome) {
+		if (cartorioRepository.findCartorioComSituacaoCadastrada(verificarNome) == null) {
+			Cartorio situacao = new Cartorio();
+			return situacao;
 		}
-		System.out.println(idCartorio);
-		Cartorio cart = cartorioRepository.findAllByCartorioId(idCartorio);
-		if (cart == null) {
-			cart = new Cartorio();
-		}
-		System.out.println(cart);
-		return cart;
-		
+	    return cartorioRepository.findCartorioComSituacaoCadastrada(verificarNome);
 	}
-
 }

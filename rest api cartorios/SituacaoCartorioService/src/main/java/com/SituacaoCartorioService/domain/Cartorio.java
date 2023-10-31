@@ -32,10 +32,9 @@ public class Cartorio implements Serializable {
 	@JsonProperty
 	String observacao;
 	
-	@Column(name="situacao_cartorio_id")
-	@Transient
+	@Column(name="situacao_cartorio")
 	@JsonProperty
-	int situacao_cartorio;
+	String situacao_cartorio;
 	
 	@Column(name="lista_atribuicoes")
 	@JsonProperty
@@ -65,11 +64,11 @@ public class Cartorio implements Serializable {
 		this.observacao = observacao;
 	}
 
-	public int getSituacao_cartorio() {
+	public String getSituacao_cartorio() {
 		return situacao_cartorio;
 	}
 
-	public void setSituacao_cartorio(int situacao_cartorio) {
+	public void setSituacao_cartorio(String situacao_cartorio) {
 		this.situacao_cartorio = situacao_cartorio;
 	}
 
