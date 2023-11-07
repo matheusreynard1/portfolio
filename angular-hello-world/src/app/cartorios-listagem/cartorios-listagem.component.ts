@@ -6,20 +6,20 @@ import { CartorioService } from '../cartorio.service'
   templateUrl: './cartorios-listagem.component.html',
   styleUrls: ['./cartorios-listagem.component.css']
 })
-export class CartoriosListagemComponent implements OnInit{
+export class CartoriosListagemComponent implements OnInit {
 
-cartorios: any;
+  cartorios: any;
 
-constructor(private cartorioService: CartorioService) {
+  constructor(private cartorioService: CartorioService) {
 
-}
+  }
 
-ngOnInit() {
-  this.listar();
-}
+  ngOnInit() {
+    this.listar();
+  }
 
-listar() {
-  this.cartorioService.listar().subscribe(dados => this.cartorios = dados)
-}
+  listar() {
+    this.cartorioService.listar().subscribe(dados => this.cartorios = dados)
+  }
 
 }

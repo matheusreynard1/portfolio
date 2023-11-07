@@ -35,17 +35,23 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNavDropdown">
                     <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a routerLink="/gettodos">GET Todos</a>
-                    </li>
-                    <br>
-                    <li class="nav-item">
-                        <a routerLink="/getporid">GET por ID</a>
-                    </li>
-                    <br>
-                    <li class="nav-item">
-                        <a routerLink="/postcadastrar">POST Cadastrar</a>
-                    </li>
+                        <li class="nav-item">
+                            <a routerLink="/gettodos">GET Todos</a>
+                        </li>
+                        <br>
+                        <li class="nav-item">
+                            <a routerLink="/getporid">GET por ID</a>
+                        </li>
+                        <br>
+                        <li class="nav-item">
+                            <a routerLink="/postcadastrar">POST Cadastrar</a>
+                        </li>
+                        <li class="nav-item">
+                            <a routerLink="/putatualizar">PUT Atualizar</a>
+                        </li>
+                        <li class="nav-item">
+                            <a routerLink="/delete">DELETE</a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -56,7 +62,7 @@
         <div>
             <table style="padding: 10px;">
                 <tr>
-                    <td style="padding: 10px;">Insira o ID: <input type="text" #id style="width: 100px; margin-right: 10px;" /><button type="button" id="btnPesquisar" class="btn btn-secondary" (click)='listarPorId(id.value)'>Pesquisar</button></td>
+                    <td style="padding: 10px;">Insira o ID: <input #id type="text" style="width: 100px; margin-right: 10px;" /><button type="button" id="btnPesquisar" class="btn btn-secondary" (click)='listarPorId(id.value)'>Pesquisar</button></td>
                 </tr>
             </table>
         </div>

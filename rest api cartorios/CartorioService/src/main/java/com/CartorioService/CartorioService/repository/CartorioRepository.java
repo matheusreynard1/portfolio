@@ -22,6 +22,8 @@ public interface CartorioRepository extends JpaRepository<Cartorio, Integer> {
 			+ "INNER JOIN situacao_cartorio c2 ON c1.situacao_cartorio = c2.nome\r\n"
 			+ "WHERE c2.nome = :nomeSituacao", nativeQuery = true)
 	String findCartorioComSituacaoCadastrada(@Param("nomeSituacao")String nomeSituacao);
+	@Query(value = "UPDATE cadastro_cartorio SET situacao_cartorio = :nomeNovo WHERE situacao_cartorio = :nomeAntigo", nativeQuery = true)
+	Cartorio alterarNomeSituacaoTabelaCartorios(String nomeNovo, String nomeAntigo);
 	
 	
 }
