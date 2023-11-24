@@ -1,1 +1,0 @@
-Códigos desenvolvidos enquanto funcionário na empresa SINQIA.
