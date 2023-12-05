@@ -1,0 +1,82 @@
+<html>
+
+    <style type="text/css">
+        p {
+            padding-top: 5px;
+            padding-right: 10px;
+            padding-bottom: 5px;
+            padding-left: 10px;
+        }
+
+        td, th {
+            padding-top: 5px;
+            padding-right: 10px;
+            padding-bottom: 5px;
+            padding-left: 10px;
+        }
+
+        li {
+            padding-top: 5px;
+            padding-right: 10px;
+            padding-bottom: 5px;
+            padding-left: 10px;
+        }
+    </style>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">  
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+    <body>
+        <nav class="navbar navbar-expand-lg bg-body-tertiary">
+            <div class="container-fluid">
+            <a class="navbar-brand">MENU</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a routerLink="/gettodos">GET Todos</a>
+                    </li>
+                    <br>
+                    <li class="nav-item">
+                        <a routerLink="/getporid">GET por ID</a>
+                    </li>
+                    <br>
+                    <li class="nav-item">
+                        <a routerLink="/postcadastrar">POST Cadastrar</a>
+                    </li>
+                    <li class="nav-item">
+                        <a routerLink="/putatualizar">PUT Atualizar</a>
+                    </li>
+                    <li class="nav-item">
+                        <a routerLink="/delete">DELETE</a>
+                    </li>
+                </ul>
+            </div>
+            </div>
+        </nav>
+        <hr />
+        <p>EXCLUIR CADASTRO</p>
+        <hr />	
+        <div>
+            <table id="gridResultado" class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Observação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of cartorios">
+                        <td>{{ item.cartorioId }}</td>
+                        <td>{{ item.nome }}</td>
+                        <td>{{ item.observacao }}</td>
+                        <td><button type="button" id="btnExcluir" class="btn btn-secondary" (click)='deletar(item.cartorioId)'>Excluir</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </body>
+</html>
