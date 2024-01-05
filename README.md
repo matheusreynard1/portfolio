@@ -4,13 +4,12 @@ Olá a todos os interessados neste portfólio.
 Seguem abaixo instruções sobre este portfólio:
 
 
-1 - PROJETO APIs SPRING BOOT
+1 - PROJETOS DE APIs SPRING BOOT
 
 
 As pastas CartorioService, SituacaoCartorioService, appreciclagem e eureka-server são projetos Spring Boot contendo APIs REST. Os 3 projetos estão vinculados
 
 diretamente com o eureka-server, necessitando rodar o eureka-server para então rodar os outros serviços juntamente. Os projetos CartorioService e
-
 SituacaoCartorioService contêm páginas HTML que consomem seus respectivos serviços.
 
 
