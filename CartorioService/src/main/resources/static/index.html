@@ -1,0 +1,102 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Cartórios CRUD</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">  
+<link rel="stylesheet" type="text/css" href="stylesIndex.css">
+<script src="scriptIndex.js"></script>
+</head>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+<script>
+	fetch("menu.html")
+	.then(response => response.text())
+	.then(data => {
+	    document.getElementById("menu").innerHTML = data;
+	});
+</script>
+
+<body onload="carregarPaginaInicial()">
+
+<body>
+
+	<div id="menu"></div>
+	
+	<div class="w-100 p-3" style="background-color: silver">
+		<label class="form-label">Selecione uma opção:</label><br>
+		<input type="radio" name="opcao" id="opcaoCadastrar" value="cadastrar" onchange="mostrarCampos('cadastrar')"/>
+		<label for="opcaoCadastrar" >Cadastrar cartório</label><br>
+		<input type="radio" name="opcao" id="opcaoPesquisarTodos" value="buscarTodos" onchange="mostrarCampos('pesquisarTodos')" />
+		<label for="opcaoPesquisarTodos" >Pesquisar todos os cartórios</label><br>
+		<input type="radio" name="opcao" id="opcaoPorId" value="buscarUm" onchange="mostrarCampos('pesquisarPorId')" />
+		<label for="opcaoPorId" >Pesquisar cartório por ID</label>
+	</div>
+		<div class="imagemFundo">
+			<div class="formulario">
+				<div class="w-100 p-3">
+					<form action="" id="formCadastroCartorio">
+						<div class="mb-3">
+						  <label for="id" class="form-label">ID:</label>
+						  <input type="text" class="form-control" id="id" style="width: 300px;">
+						</div>
+						
+						<div class="mb-3">
+						  <label for="nome" class="form-label">Nome:</label>
+						  <input type="text" class="form-control" id="nome" placeholder="Informe o nome" required="required" style="width: 300px;">
+						</div>
+						
+						<div class="mb-3">
+						  <label for="observacao" class="form-label">Observação:</label>
+						  <input type="text" class="form-control" id="observacao" placeholder="Informe uma observação" style="width: 300px;">
+						</div>
+						
+						<div class="mb-3">
+						  <label for="situacao" class="form-label">Situação cartório:</label><br>
+						  <select id="situacao" name="situacoes" length="100" style="width: 300px;">
+				          </select
+						</div>
+						
+						<div class="mb-3">
+						  <label for="listaAtribuicoes" class="form-label">Lista de atribuições:</label>
+						  <input type="text" class="form-control" id="listaAtribuicoes" placeholder="Informe uma ou mais atribuições" style="width: 300px;">
+						</div>
+					</form>
+				</div>
+			</div>
+		
+			<div class="w-100 p-3" style="background-color: silver" id="divBotao">
+				<button type="button" id="cadastrarBtn" onclick="cadastrarCartorio()" class="btn btn-secondary">Cadastrar</button>
+				<button type="button" id="pesquisarTodosBtn" onclick="pesquisarCartorios()" class="btn btn-secondary" hidden="true">Pesquisar todos</button>
+				<button type="button" id="pesquisarIdBtn" onclick="pesquisarCartorioPorId()" class="btn btn-secondary" hidden="true">Pesquisar por ID</button>
+				<button type="button" id="salvarEdicaoBtn" onclick="salvarEdicao()" class="btn btn-secondary" hidden="true">Salvar</button>
+			</div>
+			
+			<div class="w-100 p-3" style="background-color: silver" >
+				<table id="gridResultado" hidden="true" class="tabelaResultado">
+					<thead>
+						<tr>
+							<th colspan=5>RESULTADO</th>
+							<th></th>
+							<th></th>
+						</tr>
+						<tr>
+							<th>ID</th>
+							<th>Nome</th>
+							<th>Observação</th>
+							<th>Situação cartório</th>
+							<th>Lista de atribuições</th>
+							<th></th>
+							<th></th>
+					    </tr>
+				    </thead>
+				    <tbody>
+				    
+					</tbody>
+				</table>
+			</div>
+	    </div>
+	</body>
+</html>

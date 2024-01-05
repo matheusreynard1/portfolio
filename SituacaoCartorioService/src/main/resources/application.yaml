@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    url: jdbc:sqlserver://localhost:1433;dataBaseName=microsservico;integratedSecurity=true;encrypt=true;trustServerCertificate=true;
+    driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
+  application:
+    name: SituacaoCartorioService
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.SQLServerDialect
+    show-sql: true
+
+server:
+  port: 6161
+    
+eureka:
+  client:
+    service-url:
+      default-zone: http://localhost:8761/eureka
+  instance:
+    prefer-ip-address: true

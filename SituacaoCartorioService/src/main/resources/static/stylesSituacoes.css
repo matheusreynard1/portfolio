@@ -1,0 +1,57 @@
+
+/* Estilos para a tabela */
+.tabela-padrao {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Estilos para cabeçalhos de coluna */
+.tabela-padrao th {
+  background-color: #f2f2f2;
+  text-align: left;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+/* Estilos para células de dados */
+.tabela-padrao td {
+  padding: 8px;
+  border-bottom: 1px solid #ccc;
+}
+
+/* Estilos para linhas alternadas (opcional) */
+.tabela-padrao tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.form-label {
+    font-weight: bold;
+}
+
+.form-control {
+	width: 300px;
+}
+
+form {
+  width: 500px; /* Defina a largura do formulário conforme necessário */
+  height: 450px;
+}
+
+button {
+	width: 300px;
+}
+
+.imagemFundo::before {
+	  content: "";
+	  position: absolute;
+	  top: 0;
+	  left: 0;
+	  width: 100%;
+	  height: 75%;
+	  background-image: url('images/background.jpg');
+	  background-size: cover;
+	  background-repeat: no-repeat;
+	  background-attachment: fixed;
+	  opacity: 0.5; /* Ajuste a opacidade da imagem de fundo conforme necessário */
+	  z-index: -1; /* Coloca o pseudo-elemento atrás do conteúdo da div */
+}

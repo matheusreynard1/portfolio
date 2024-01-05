@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    url: jdbc:sqlserver://localhost:1433;dataBaseName=appreciclagem;integratedSecurity=true;encrypt=true;trustServerCertificate=true;
+    driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
+  application:
+    name: AppReciclagemService
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.SQLServerDialect
+    show-sql: true
+    
+server:
+  port: 6565
+  
+eureka:
+  client:
+    service-url:
+      default-zone: http://localhost:8761/eureka
+  instance:
+    prefer-ip-address: true
