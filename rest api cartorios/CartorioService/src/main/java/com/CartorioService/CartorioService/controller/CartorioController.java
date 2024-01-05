@@ -59,9 +59,11 @@ public class CartorioController {
 		String idCartorio;
 		if (cartorioRepository.findCartorioComSituacaoCadastrada(verificarNome) == null) {
 			idCartorio = "0";
+			System.out.println(idCartorio);
 			return idCartorio;
 		}
 		idCartorio = cartorioRepository.findCartorioComSituacaoCadastrada(verificarNome);
+		System.out.println(idCartorio);
 	    return idCartorio;
 	}
 	
