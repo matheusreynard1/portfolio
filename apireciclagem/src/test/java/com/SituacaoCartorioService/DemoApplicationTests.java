@@ -1,10 +1,10 @@
-package com.ApiReciclagem.appreciclagem;
+package com.SituacaoCartorioService;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class AppreciclagemApplicationTests {
+class DemoApplicationTests {
 
 	@Test
 	void contextLoads() {

@@ -1,7 +1,11 @@
 package com.ApiReciclagem.appreciclagem.controller;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,7 +17,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ApiReciclagem.appreciclagem.domain.EmpresaReciclagem;
+import com.ApiReciclagem.appreciclagem.domain.LoginDTO;
 import com.ApiReciclagem.appreciclagem.repository.EmpresaReciclagemRepository;
+import com.ApiReciclagem.appreciclagem.service.TokenService;
 
 @RestController
 public class EmpresaReciclagemController {
@@ -21,9 +27,26 @@ public class EmpresaReciclagemController {
 	@Autowired
 	private EmpresaReciclagemRepository empresaRepository;
 	
-	@PostMapping(value = "/empresa/login/{empresaNome}/{empresaSenha}")
-	public EmpresaReciclagem realizarLogin(@PathVariable String empresaNome, @PathVariable String empresaSenha) {
-		return empresaRepository.realizarLogin(empresaNome, empresaSenha);
+	@Autowired
+	private TokenService tokenService;
+	
+	@PostMapping(value = "/empresa/login")
+	public String realizarLogin(@RequestBody LoginDTO loginDTO) {
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+		EmpresaReciclagem usuario = new EmpresaReciclagem();
+		
+		usuario.setNome(loginDTO.login());
+		usuario.setSenha(loginDTO.senha());
+		
+		String senhaArmazenada = empresaRepository.getSenhaByNome(loginDTO.login());
+		
+		if (encoder.matches(loginDTO.senha(), senhaArmazenada)) {
+			System.out.println("token: " + senhaArmazenada);
+			return tokenService.gerarToken(usuario);
+		} else {
+			return "Credenciais inválidas.";
+		}
+		
 	}
 	
 	@CrossOrigin(origins = "http://192.168.15.28:8081")
@@ -52,6 +75,7 @@ public class EmpresaReciclagemController {
 	@CrossOrigin(origins = "http://192.168.15.28:8081")
 	@GetMapping(value = "/empresa")
 	public List<EmpresaReciclagem> findAll() {
+		System.out.println("ENTROU FINDALL");
 		return empresaRepository.findAll();
 	}
 	

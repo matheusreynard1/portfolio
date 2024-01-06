@@ -8,6 +8,7 @@ export default function TelaInicial() {
 
   const { user } = useContext(AuthContext)
   const { setAuthState } = useContext(AuthContext);
+  const { tokenRecebido } = useContext(AuthContext);
   const navigation = useNavigation();
   const [data, setData] = useState([]);
   const [pesquisarNome, setPesquisarNome] = useState();
@@ -19,18 +20,35 @@ export default function TelaInicial() {
   }
 
   async function clicouPesquisar() {
-    console.log(pesquisarNome)
+    const token = tokenRecebido;
+    console.log('clicou pesquisar: ' + token)
+
     if (pesquisarNome !== '' && pesquisarNome !== undefined) {
-      await axios.get('http://10.0.2.2:6565/empresa/buscarNome/' + pesquisarNome).then(response => { 
-        setData(response.data);
-      }).catch((error) => { 
-        console.log(error + ' - Error retrieving data')
+
+      // ENDPOINT DE BUSCAR PELO NOME DA EMPRESA
+      const resposta = await axios.get('http://10.0.2.2:6565/empresa/buscarNome/' + pesquisarNome, {
+        headers: {
+          'Authorization': `${token}`
+        },
       })
-    } else {
-      await axios.get('http://10.0.2.2:6565/empresa').then(response => { 
+      .then(response => { 
         setData(response.data);
       }).catch((error) => { 
-        console.log(error + ' - Error retrieving data')
+        console.log(error + ' - Error retrieving data endpoint /empresa/buscarNome')
+      })
+
+    } else {
+
+      // ENDPOINT DE BUSCAR TODAS AS EMPRESAS
+      const resposta2 = await axios.get('http://10.0.2.2:6565/empresa', {
+        headers: {
+          'Authorization': `${token}`
+        },
+      })
+      .then(response => { 
+        setData(response.data);
+      }).catch((error) => { 
+        console.log(error + ' - Error retrieving data endpoint /empresa')
       })
     }
   };
@@ -44,7 +62,7 @@ export default function TelaInicial() {
       <View style={styles.containerPesquisar}>
         <TextInput
           placeholder="Pesquisar por Nome..."
-          style={{ borderBottomWidth: 1, borderBottomColor: '#ccc' , width: 250 }}
+          style={{ borderBottomWidth: 1, borderBottomColor: '#ccc' , width: 330 }}
           value={pesquisarNome}
           onChangeText={setPesquisarNome}
         />
@@ -54,13 +72,13 @@ export default function TelaInicial() {
           data={data}
           keyExtractor={(item) => item.idEmpresa}
           renderItem={({ item }) => (
-            <View style={{ width: 250 }}>
-              <Text >{item.nome} - {item.endereco}</Text>
+            <View style={{ width: 320 }}>
+              <Text style={styles.textItem}>{item.nome} - {item.endereco}</Text>
             </View>
           )}
           ListHeaderComponent={() => (
             <View>
-              <Text style={{}}>NOME - ENDEREÇO</Text>
+              <Text>NOME - ENDEREÇO</Text>
             </View>
           )}
         />
@@ -98,7 +116,7 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     paddingRight: 20,
     height: 60,
-    width: 300,
+    width: 350,
     borderBottomRightRadius: 15,
     borderBottomLeftRadius: 15
   },
@@ -119,9 +137,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1, 
     borderColor: '#000', 
-    margin: 10, 
+    margin: 5, 
     borderRadius: 5,
-    width: 250,
+    width: 330,
     height: 300
   },
   logo: {
@@ -140,16 +158,16 @@ const styles = StyleSheet.create({
     backgroundColor: "#6C813C",
     padding: 10,
     margin: 10,
-    width: '80%',
+    width: 330,
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
     borderBottomRightRadius: 15,
     borderBottomLeftRadius: 15
   },
   textItem: {
-    fontSize: 20,
+    fontSize: 15,
     color: '#34495E',
-    padding: 25,
+    padding:5,
     borderBottomWidth: 1,
     borderBottomColor: '#CCC'
   }
