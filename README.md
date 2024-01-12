@@ -11,6 +11,8 @@ As pastas CartorioService, SituacaoCartorioService, apireciclagem e eureka-serve
 diretamente com o eureka-server, necessitando rodar o eureka-server para então rodar os outros serviços juntamente. Os projetos CartorioService e
 SituacaoCartorioService contêm páginas HTML que consomem seus respectivos endpoints, utilizando JavaScript.
 
+O projeto apireciclagem está configurado para rodar Docker, caso seja de interesse. E também está documentado com Swagger.
+
 
 **2 - PROJETO ANGULAR CRUD**
 

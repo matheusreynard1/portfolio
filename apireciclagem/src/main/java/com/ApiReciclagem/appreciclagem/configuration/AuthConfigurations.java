@@ -14,36 +14,47 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+//ACESSAR O SWAGGER = http://localhost:6565/swagger-ui.html
+
 @Configuration
 @EnableWebSecurity
 public class AuthConfigurations {
-	
+
 	@Autowired
 	private FilterToken filter;
-	
+
 	@Bean
 	// FILTROS DA AUTENTICAÇÃO
 	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        return httpSecurity
-                .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.POST, "/empresa/empresaAdd", "/empresa/login").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/empresa/nomeExistente/{empresaNome}").permitAll()
-                        .anyRequest().authenticated())
-                .build();
+		return httpSecurity.csrf(csrf -> csrf.disable())
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
+				.authorizeHttpRequests(
+						authorize -> authorize.antMatchers("/**.html", "/v2/api-docs", "/v3/api-docs/**").permitAll()
+						.antMatchers("/swagger-resouces/**").permitAll()
+			            .antMatchers("/configuration/**").permitAll()
+			            .antMatchers("/configuration/security").permitAll()
+			            .antMatchers("/webjars/**").permitAll()
+			            .antMatchers("/v2/**").permitAll()
+			            .antMatchers("/swagger-ui.html").permitAll()
+			            .antMatchers("/swagger-ui/index.html").permitAll()
+			            .antMatchers("/swagger-ui/**").permitAll()
+			            .antMatchers(HttpMethod.POST, "/empresa/empresaAdd", "/empresa/login").permitAll()
+			            .antMatchers(HttpMethod.GET, "/empresa/nomeExistente/{empresaNome}").permitAll()
+			            .anyRequest().authenticated())
+				.build();
 	}
 
 	@Bean
 	// GERAR SENHA CRIPTOGRAFADA
-	public PasswordEncoder passwordEncoder( ) {
+	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-	
+
 	// RETORNAR O AUTHENTICATION MANAGER
 	@Bean
-	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+			throws Exception {
 		return authenticationConfiguration.getAuthenticationManager();
 	}
 }
