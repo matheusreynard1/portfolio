@@ -41,6 +41,8 @@ public class AuthConfigurations {
 			            .antMatchers("/swagger-ui/**").permitAll()
 			            .antMatchers(HttpMethod.POST, "/empresa/empresaAdd", "/empresa/login").permitAll()
 			            .antMatchers(HttpMethod.GET, "/empresa/nomeExistente/{empresaNome}").permitAll()
+			            .antMatchers(HttpMethod.GET, "/empresa/nomeRepetido/{empresaNome}/{empresaId}").permitAll()
+			            .antMatchers(HttpMethod.PUT, "/empresa/alterar/{empresaId}").permitAll()
 			            .anyRequest().authenticated())
 				.build();
 	}

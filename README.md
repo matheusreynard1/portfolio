@@ -24,9 +24,7 @@ Este projeto é um CRUD em Angular que consome os endpoints presentes em Cartori
 
 
 Este projeto consome em React Native os endpoints presentes em apireciclagem. Trata-se de um aplicativo para cadastro de empresas de reciclagem que são exibidas
-no Google Maps para assim localizar a empresa mais próxima do seu endereço.
+no Google Maps para assim localizar a empresa mais próxima do seu endereço. O projeto não está totalmente implementado.
 
-
-Observação: cada projeto contém uma foto do mesmo.
 
 Observação 2: as IDEs utilizadas foram VS Code e Spring Tools Suite.

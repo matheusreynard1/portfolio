@@ -4,11 +4,11 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,7 +17,6 @@ import com.ApiReciclagem.appreciclagem.domain.EmpresaReciclagem;
 import com.ApiReciclagem.appreciclagem.domain.LoginDTO;
 import com.ApiReciclagem.appreciclagem.repository.EmpresaReciclagemRepository;
 import com.ApiReciclagem.appreciclagem.service.TokenService;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
 public class EmpresaReciclagemController {
@@ -45,8 +44,24 @@ public class EmpresaReciclagemController {
 		}
 
 	}
-
-	@CrossOrigin(origins = "http://192.168.15.28:8081")
+	
+	@PutMapping(value = "/empresa/alterar/{empresaId}")
+	public EmpresaReciclagem alterar( @PathVariable int empresaId, @RequestBody EmpresaReciclagem empresaAlterada) {
+		EmpresaReciclagem empresa = findAllByEmpresaId(empresaId);
+		empresa.setNome(empresaAlterada.getNome());
+		empresa.setSenha(new BCryptPasswordEncoder().encode(empresaAlterada.getSenha()));
+		empresa.setEmail(empresaAlterada.getEmail());
+		empresa.setTelefone(empresaAlterada.getTelefone());
+		empresa.setEndereco(empresaAlterada.getEndereco());
+		empresaRepository.save(empresa);
+		return empresa;
+	}
+	
+	/*@GetMapping(value = "/empresa/findId/{empresaNome}")
+	public int findId(@PathVariable String empresaNome) {
+		return empresaRepository.findId(empresaNome);
+	}*/
+	
 	@PostMapping(value = "/empresa/empresaAdd")
 	public @ResponseBody EmpresaReciclagem empresaAdd(@RequestBody EmpresaReciclagem novaEmpresa) {
 		String senhaCriptografada = new BCryptPasswordEncoder().encode(novaEmpresa.getSenha());
@@ -65,11 +80,16 @@ public class EmpresaReciclagemController {
 	}
 
 	@GetMapping(value = "/empresa/nomeExistente/{empresaNome}")
-	public List<EmpresaReciclagem> findNome(@PathVariable String empresaNome) {
-		return empresaRepository.findNome(empresaNome);
+	public EmpresaReciclagem findNome(@PathVariable String empresaNome) {
+		return empresaRepository.findByNome(empresaNome);
 	}
+	
+	@GetMapping(value = "/empresa/nomeRepetido/{empresaNome}/{empresaId}")
+	public int findNomeRepetido(@PathVariable String empresaNome, @PathVariable String empresaId) {
+		return empresaRepository.findNomeRepetido(empresaNome, empresaId);
+	}
+	
 
-	@CrossOrigin(origins = "http://192.168.15.28:8081")
 	@GetMapping(value = "/empresa")
 	public List<EmpresaReciclagem> findAll() {
 		return empresaRepository.findAll();
@@ -80,5 +100,27 @@ public class EmpresaReciclagemController {
 		empresaRepository.deleteById(id);
 		return "Registro " + id + " excluído com sucesso.";
 	}
+	
+	/*@GetMapping(value = "/empresa/alterarSenha/{login}/{senha}")
+	public EmpresaReciclagem alterarSenha(@PathVariable String login, @PathVariable String senha) {
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+		EmpresaReciclagem usuario = new EmpresaReciclagem();
+		String senhaArmazenada = empresaRepository.getSenhaByNome(login);
+		usuario = (EmpresaReciclagem) empresaRepository.getUsuarioByLoginSenha(login, senha);
+
+		// Não houve alteração na senha
+		if (encoder.matches(senha, senhaArmazenada)) {
+			System.out.println("senha: " + senha + " senha armazenada: " + senhaArmazenada);
+			return null;
+		} else {
+			// Houve alteração na senha
+			String senhaCriptografada = new BCryptPasswordEncoder().encode(senha);
+			if (usuario != null)
+				usuario.setSenha(senhaCriptografada);
+			else
+				usuario = new EmpresaReciclagem();
+			return usuario;
+		}
+	}*/
 
 }

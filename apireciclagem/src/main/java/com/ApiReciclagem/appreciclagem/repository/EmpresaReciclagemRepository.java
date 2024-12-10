@@ -18,11 +18,17 @@ public interface EmpresaReciclagemRepository extends JpaRepository<EmpresaRecicl
 	@Query(value = "SELECT * FROM empresa_reciclagem WHERE nome = :empresaNome AND senha = :empresaSenha", nativeQuery = true)
 	EmpresaReciclagem realizarLogin(@Param("empresaNome") String empresaNome, @Param("empresaSenha") String empresaSenha);
 	
+	@Query(value = "SELECT * FROM empresa_reciclagem WHERE nome = :empresaNome AND senha = :empresaSenha", nativeQuery = true)
+	EmpresaReciclagem getUsuarioByLoginSenha(@Param("empresaNome") String empresaNome, @Param("empresaSenha") String empresaSenha);
+	
 	@Query(value = "SELECT * FROM empresa_reciclagem WHERE nome LIKE %:empresaNome%", nativeQuery = true)
 	List<EmpresaReciclagem> findAllByEmpresaNome(@Param("empresaNome") String empresaNome);
 	
-	@Query(value = "SELECT * FROM empresa_reciclagem WHERE nome = :empresaNome", nativeQuery = true)
-	List<EmpresaReciclagem> findNome(@Param("empresaNome") String empresaNome);
+	@Query(value = "SELECT COUNT(nome) FROM empresa_reciclagem WHERE id <> :empresaId AND nome = :empresaNome", nativeQuery = true)
+	int findNomeRepetido(@Param("empresaNome") String empresaNome, @Param("empresaId") String empresaId);
+	
+	/*@Query(value = "SELECT id FROM empresa_reciclagem WHERE nome = :empresaNome", nativeQuery = true)
+	int findId(@Param("empresaNome") String empresaNome);*/
 	
 	List<EmpresaReciclagem> findAll();
 	
